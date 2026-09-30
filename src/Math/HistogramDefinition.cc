@@ -105,7 +105,7 @@ namespace Hammer {
         IndexList dims;
         dims.reserve(_indexing.rank());
         const auto& fullDimensions = _indexing.dims();
-        copy(fullDimensions.begin(), fullDimensions.end(), back_inserter(dims));
+        std::copy(fullDimensions.begin(), fullDimensions.end(), back_inserter(dims));
         vector<flatbuffers::Offset<Serial::FBVecDouble>> vecsedges;
         auto edges = _indexing.edges();
         for (auto& elem : edges) {

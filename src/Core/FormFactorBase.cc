@@ -173,8 +173,8 @@ namespace Hammer {
             auto oldsize = newdims.size();
             newdims.reserve(2 * oldsize);
             newlabs.reserve(2 * oldsize);
-            copy_n(newdims.begin(), oldsize, back_inserter(newdims));
-            transform_n(newlabs.begin(), oldsize, back_inserter(newlabs),
+            std::copy_n(newdims.begin(), oldsize, std::back_inserter(newdims));
+            transform_n(newlabs.begin(), oldsize, std::back_inserter(newlabs),
                         [](IndexLabel l) -> IndexLabel { return static_cast<IndexLabel>(-l); });
             newlabs.push_back(INTEGRATION_INDEX);
             newdims.push_back(static_cast<IndexType>(intPoints.size()));

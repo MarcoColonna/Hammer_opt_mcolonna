@@ -22,7 +22,7 @@ namespace Hammer::MultiDimensional {
 
     template <class BasicIndexing>
     IndexType LabeledIndexing<BasicIndexing>::dim(IndexLabel label) const {
-        ptrdiff_t pos = -distance(find(_labels.begin(), _labels.end(), label), _labels.begin());
+        ptrdiff_t pos = -std::distance(std::find(_labels.begin(), _labels.end(), label), _labels.begin());
         auto dim = static_cast<ptrdiff_t>(this->rank());
         if (pos < dim && pos >= 0) {
             return this->dim(static_cast<IndexType>(pos));
@@ -97,10 +97,10 @@ namespace Hammer::MultiDimensional {
             auto it = _labels.begin();
             auto ito = otherLabels.begin();
             while (it != _labels.end() && ito != otherLabels.end()) {
-                auto it2 = find(it, _labels.end(), elem);
-                auto ito2 = find(ito, otherLabels.end(), elem);
-                ptrdiff_t pos1 = distance(_labels.begin(), it2);
-                ptrdiff_t pos2 = distance(otherLabels.begin(), ito2);
+                auto it2 = std::find(it, _labels.end(), elem);
+                auto ito2 = std::find(ito, otherLabels.end(), elem);
+                ptrdiff_t pos1 = std::distance(_labels.begin(), it2);
+                ptrdiff_t pos2 = std::distance(otherLabels.begin(), ito2);
                 if (pos1 < firstdim && pos2 < otherdim) {
                     result.emplace_back(pos1, pos2);
                 }
@@ -127,8 +127,8 @@ namespace Hammer::MultiDimensional {
         for (auto elem : indices) {
             if (elem > 0) {
                 auto other_elem = static_cast<IndexLabel>(-elem);
-                ptrdiff_t pos1 = -distance(find(_labels.begin(), _labels.end(), elem), _labels.begin());
-                ptrdiff_t pos2 = -distance(find(_labels.begin(), _labels.end(), other_elem), _labels.begin());
+                ptrdiff_t pos1 = -std::distance(std::find(_labels.begin(), _labels.end(), elem), _labels.begin());
+                ptrdiff_t pos2 = -std::distance(std::find(_labels.begin(), _labels.end(), other_elem), _labels.begin());
                 auto dimval = static_cast<ptrdiff_t>(_labels.size());
                 if (pos1 < dimval && pos2 < dimval) {
                     result.emplace_back(pos1, pos2);
@@ -142,10 +142,10 @@ namespace Hammer::MultiDimensional {
     MaybeBool LabeledIndexing<BasicIndexing>::isSameLabelShapeNeedHc(const LabelsList& otherLabels,
                                                                      const IndexList& otherIndices) const {
         if (this->isSameShape(otherIndices)) {
-            if (equal(_labels.begin(), _labels.end(), otherLabels.begin())) {
+            if (std::equal(_labels.begin(), _labels.end(), otherLabels.begin())) {
                 return false;
             }
-            if (equal(_labels.begin(), _labels.end(), otherLabels.begin(),
+            if (std::equal(_labels.begin(), _labels.end(), otherLabels.begin(),
                       [](IndexLabel a, IndexLabel b) -> bool { return a == -b; })) {
                 return true;
             }
@@ -167,7 +167,7 @@ namespace Hammer::MultiDimensional {
         if (!result) {
             return false;
         }
-        result &= equal(_labels.begin(), _labels.end(), otherLabels.begin());
+        result &= std::equal(_labels.begin(), _labels.end(), otherLabels.begin());
         return result;
     }
 
@@ -179,8 +179,8 @@ namespace Hammer::MultiDimensional {
 
     template <class BasicIndexing>
     IndexType LabeledIndexing<BasicIndexing>::labelIndex(IndexLabel label) const {
-        auto itfind = find(_labels.begin(), _labels.end(), label);
-        return static_cast<IndexType>(distance(_labels.begin(), itfind));
+        auto itstd::find = std::find(_labels.begin(), _labels.end(), label);
+        return static_cast<IndexType>(std::distance(_labels.begin(), itstd::find));
     }
 
 

@@ -84,21 +84,21 @@ namespace Hammer {
 
     bool Tensor::hasWCLabels() const {
         auto labs = labels();
-        return find_if(labs.begin(), labs.end(), [&](IndexLabel& lab) -> bool {
+        return std::find_if(labs.begin(), labs.end(), [&](IndexLabel& lab) -> bool {
                    return (lab > WC_INDEX_START && lab < WC_INDEX_END);
                }) != labs.end();
     }
 
     bool Tensor::hasFFLabels() const {
         auto labs = labels();
-        return find_if(labs.begin(), labs.end(), [&](IndexLabel& lab) -> bool {
+        return std::find_if(labs.begin(), labs.end(), [&](IndexLabel& lab) -> bool {
                    return (lab > FF_INDEX_START && lab < FF_INDEX_END);
                }) != labs.end();
     }
 
     bool Tensor::hasFFVarLabels() const {
         auto labs = labels();
-        return find_if(labs.begin(), labs.end(), [&](IndexLabel& lab) -> bool {
+        return std::find_if(labs.begin(), labs.end(), [&](IndexLabel& lab) -> bool {
                    return (lab > FF_VAR_INDEX_START && lab < FF_VAR_INDEX_END);
                }) != labs.end();
     }
