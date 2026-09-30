@@ -47,21 +47,17 @@ namespace Hammer::MultiDimensional {
     }
 
     bool SequentialIndexing::checkValidIndices(const IndexList& indices) const {
-        bool valid = (indices.size() == _dimensions.size());
-        if (!valid) {
+        if (indices.size() != _dimensions.size()){
             return false;
         }
-        valid = inner_product(indices.begin(), indices.end(), _dimensions.begin(), valid, logical_and<>(), less<>());
-        return valid;
+        return inner_product(indices.begin(), indices.end(), _dimensions.begin(), true, logical_and<>(), less<>());
     }
 
     bool SequentialIndexing::checkValidIndices(IndexList::const_iterator first, IndexList::const_iterator last) const {
-        bool valid = (distance(first, last) == static_cast<ptrdiff_t>(_dimensions.size()));
-        if (!valid) {
+        if (indices.size() != _dimensions.size()){
             return false;
         }
-        valid = inner_product(first, last, _dimensions.begin(), valid, logical_and<>(), less<>());
-        return valid;
+        return inner_product(first, last, _dimensions.begin(), true, logical_and<>(), less<>());
     }
 
     PositionType SequentialIndexing::indicesToPos(const IndexList& indices) const {
@@ -76,12 +72,9 @@ namespace Hammer::MultiDimensional {
         if (rank() == 1) {
             return *first;
         }
-        PositionType index = 0ul;
-        function<size_t(PositionType, IndexType)> opCombine = [](PositionType a, IndexType b) -> PositionType {
-            return a * b;
-        };
-        index = inner_product(first, last, _strides.begin(), index, plus<>(), opCombine);
-        return index;
+        return inner_product(first, last, _strides.begin(),
+                    PositionType(0), plus<PositionType>(),
+                    [] (PositionType a, IndexType b) { return a * b; });
     }
 
     void SequentialIndexing::posToIndices(PositionType position, IndexList& result) const {
