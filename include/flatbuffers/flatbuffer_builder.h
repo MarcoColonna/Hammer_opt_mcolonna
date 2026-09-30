@@ -38,6 +38,9 @@
 #include "flatbuffers/vector_downward.h"
 #include "flatbuffers/verifier.h"
 
+#include <boost/container/small_vector.hpp>
+
+
 namespace flatbuffers {
 
 // Converts a Field ID to a virtual table offset.
@@ -63,6 +66,16 @@ T* data(std::vector<T, Alloc>& v) {
   // we need it to be non-null to avoid undefined behavior.
   static uint8_t t;
   return v.empty() ? reinterpret_cast<T*>(&t) : &v.front();
+}
+
+template<class T, std::size_t Sz, class Alloc, class Options>
+const T *data(const boost::container::small_vector<T, Sz, Alloc, Options> &v) {
+  return v.empty() ? nullptr : &v.front();
+}
+template<class T, std::size_t Sz, class Alloc, class Options>
+T *data(boost::container::small_vector<T, Sz, Alloc, Options> &v) {
+
+  return v.empty() ? nullptr : &v.front();
 }
 
 /// @addtogroup flatbuffers_cpp_api
@@ -818,6 +831,11 @@ class FlatBufferBuilderImpl {
     return CreateVector(data(v), v.size());
   }
 
+  template <typename T, std::size_t Sz, class Alloc, class Options>
+  Offset<Vector<T>> CreateVector(const boost::container::small_vector<T, Sz, Alloc, Options> &v) {
+      return CreateVector(data(v), v.size());
+  }
+
   template <template <typename...> class VectorT = Vector64,
             int&... ExplicitArgumentBarrier, typename T>
   Offset64<VectorT<T>> CreateVector64(const std::vector<T>& v) {
@@ -829,6 +847,15 @@ class FlatBufferBuilderImpl {
   // Background: https://isocpp.org/blog/2012/11/on-vectorbool
   Offset<Vector<uint8_t>> CreateVector(const std::vector<bool>& v) {
     StartVector<uint8_t>(v.size());
+    for (auto i = v.size(); i > 0;) {
+      PushElement(static_cast<uint8_t>(v[--i]));
+    }
+    return Offset<Vector<uint8_t>>(EndVector(v.size()));
+  }
+
+  template <std::size_t Sz, class Alloc, class Options>
+  Offset<Vector<uint8_t>> CreateVector(const boost::container::small_vector<bool, Sz, Alloc, Options> &v) {
+    StartVector(v.size(), sizeof(uint8_t));
     for (auto i = v.size(); i > 0;) {
       PushElement(static_cast<uint8_t>(v[--i]));
     }
