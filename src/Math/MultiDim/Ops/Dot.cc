@@ -1067,7 +1067,7 @@ namespace Hammer::MultiDimensional {
                 auto newscalar = makeEmptyScalar();
                 IContainer::ElementType res = 0.;
                 BruteForceIterator bf{a.dims()};
-                for (auto elem : bf) {
+                for (const auto& elem : bf) {
                     auto aVal = a.element(elem);
                     if (isZero(aVal)) {
                         continue;
@@ -1094,7 +1094,7 @@ namespace Hammer::MultiDimensional {
             auto tmp = makeEmptySparse(newdimlabs.first, newdimlabs.second);
             Base* results = tmp.release();
             BruteForceIterator bf{a.dims()};
-            for (auto elem : bf) {
+            for (const auto& elem : bf) {
                 auto aVal = a.element(elem);
                 if (isZero(aVal)) {
                     continue;
@@ -1107,7 +1107,7 @@ namespace Hammer::MultiDimensional {
                     fixed[idx.second] = elem[idx.first];
                 }
                 BruteForceIterator bf2{b.dims(), fixed};
-                for (auto elem2 : bf2) {
+                for (const auto& elem2 : bf2) {
                     auto bVal = b.element(elem2);
                     if (isZero(bVal)) {
                         continue;

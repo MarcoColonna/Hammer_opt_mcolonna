@@ -72,9 +72,9 @@ namespace Hammer::MultiDimensional {
         Base* AddAt::operator()(VTensor& a, const OTensor& b) const {
             BruteForceIterator bf{b.dims()};
             SequentialIndexing seq{b.dims()};
-            for (auto it = bf.begin(); it != bf.end(); ++it) {
-                const PositionType newpos = a.getIndexing().extendPosition(seq.indicesToPos(*it), _position, _coord);
-                a[newpos] += b.value(*it);
+            for (const auto& el: bf) {
+                const PositionType newpos = a.getIndexing().extendPosition(seq.indicesToPos(el), _position, _coord);
+                a[newpos] += b.value(el);
             }
             return static_cast<Base*>(&a);
         }
@@ -82,10 +82,10 @@ namespace Hammer::MultiDimensional {
         Base* AddAt::operator()(STensor& a, const OTensor& b) const {
             BruteForceIterator bf{b.dims()};
             AlignedIndexing ali{b.dims()};
-            for (auto it = bf.begin(); it != bf.end(); ++it) {
+            for (const auto& el: bf) {
                 const PositionType newpos =
-                    a.getIndexing().extendAlignedPosition(ali.indicesToPos(*it), _position, _coord);
-                a[newpos] += b.value(*it);
+                    a.getIndexing().extendAlignedPosition(ali.indicesToPos(el), _position, _coord);
+                a[newpos] += b.value(el);
             }
             return static_cast<Base*>(&a);
         }

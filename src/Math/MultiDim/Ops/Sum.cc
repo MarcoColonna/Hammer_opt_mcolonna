@@ -117,7 +117,7 @@ namespace Hammer::MultiDimensional {
 
         IContainer* Sum::operator()(Base& a, const Base& b) {
             BruteForceIterator bf{a.dims()};
-            for (auto elem : bf) {
+            for (const auto& elem : bf) {
                 a.element(elem) += b.element(elem);
             }
             return &a;

@@ -72,10 +72,10 @@ namespace Hammer::MultiDimensional {
             auto tmp = makeEmptyVector(a.dims(), a.labels());
             auto* res = static_cast<VTensor*>(tmp.get());
             BruteForceIterator bf{a.dims()};
-            for (auto it = bf.begin(); it != bf.end(); ++it) {
-                auto val = a.value(*it);
+            for (const auto& el: bf) {
+                auto val = a.value(el);
                 if (!isZero(val)) {
-                    res->element(*it) = val;
+                    res->element(el) = val;
                 }
             }
             return tmp.release();
