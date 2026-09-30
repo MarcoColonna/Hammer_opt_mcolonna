@@ -102,7 +102,7 @@ namespace Hammer {
 
 
     void HistogramDefinition::write(flatbuffers::FlatBufferBuilder* msgwriter, const string& name) const {
-        vector<uint16_t> dims;
+        IndexList dims;
         dims.reserve(_indexing.rank());
         const auto& fullDimensions = _indexing.dims();
         copy(fullDimensions.begin(), fullDimensions.end(), back_inserter(dims));

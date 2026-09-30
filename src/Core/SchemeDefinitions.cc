@@ -31,7 +31,7 @@ namespace Hammer {
                                   vector<flatbuffers::Offset<Serial::FBFFScheme>>* schemes) const {
         schemes->reserve(_formFactorSchemes.size());
         for (const auto& elem : _formFactorSchemes) {
-            vector<uint16_t> chs;
+            IndexList chs;
             vector<uint64_t> ids;
             vector<string> keys;
             vector<string> vals;

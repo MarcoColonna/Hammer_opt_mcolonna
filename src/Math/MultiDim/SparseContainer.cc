@@ -276,7 +276,7 @@ namespace Hammer::MultiDimensional {
         //     << " vs " << 1.-(count2*(16+4)+4*2)/(16.*numValues()+4) << '\n';
         auto serialdata = msgwriter->CreateVectorOfStructs(datalist.data(), datalist.size());
         auto serialpos = msgwriter->CreateVector(poslist);
-        vector<uint16_t> outdims;
+        IndexList outdims;
         for (auto elem : _indexing.dims()) {
             outdims.push_back(static_cast<uint16_t>(elem));
         }

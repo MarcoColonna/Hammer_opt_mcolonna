@@ -651,7 +651,7 @@ namespace Hammer::MultiDimensional {
         map<IContainer*, uint16_t> stored;
         uint16_t nextId = 0;
         for (auto& elem : _data) {
-            vector<uint16_t> values;
+            IndexList values;
             vector<bool> conjStatus;
             values.reserve(elem.size());
             conjStatus.reserve(elem.size());

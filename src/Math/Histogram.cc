@@ -218,7 +218,7 @@ namespace Hammer {
     unique_ptr<Serial::FBHistogramBuilder> Histogram::write(flatbuffers::FlatBufferBuilder* msgwriter) const {
         vector<flatbuffers::Offset<Serial::FBTensor>> weightbins;
         vector<flatbuffers::Offset<Serial::FBTensor>> weightbins2;
-        vector<uint16_t> poslist;
+        IndexList poslist;
         vector<uint64_t> nEvs;
         weightbins.reserve(_data.size());
         nEvs.reserve(_data.size());
