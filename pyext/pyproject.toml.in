@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools >= 77.0.3", "build"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "hammer"
+version = "@Hammer_VERSION@"
+authors = [
+    { name = "The HAMMER Collaboration", email = "hammer-support@lbl.gov" },
+]
+description = "HAMMER - Helicity Amplitude Module for Matrix Element Reweighting"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    'Development Status :: 5 - Production/Stable',
+    'Environment :: Console',
+    'Intended Audience :: Science/Research',
+    'Operating System :: MacOS :: MacOS X',
+    'Operating System :: POSIX :: Linux',
+    'Programming Language :: C++',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+    'Programming Language :: Python :: 3.13',
+    'Programming Language :: Unix Shell',
+    'Topic :: Scientific/Engineering :: Physics',
+    @HAMMER_BINDING_CLASSIFIERS@
+]
+license = "LGPL-3.0-only"
+license-files = ["COPYING", "GUIDELINES"]
+dependencies = @HAMMER_PYTHON_DEPS@
+
+[project.optional-dependencies]
+extra = @HAMMER_PYTHON_OPTIONAL_DEPS@
+
+[project.urls]
+Homepage = "https://hammer.physics.lbl.gov"
+Issues = "https://gitlab.com/mpapucci/Hammer/-/issues"
+DOCUMENTATION = "https://hammer.physics.lbl.gov/HammerManual.pdf"
+Repository = "https://gitlab.com/mpapucci/Hammer"
+
+[tool.setuptools.packages.find]
+where = ["@MODULE_DIR@"]
+include = ["hammer"]
+
+[tool.setuptools.package-data]
+hammer = ["*.so", "*.dylib", "*.DLL", "*.pcm", "*.rootmap", "*.map"]

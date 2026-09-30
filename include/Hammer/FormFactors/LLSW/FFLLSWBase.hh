@@ -1,0 +1,54 @@
+///
+/// @file  FFLLSWBase.hh
+/// @brief Hammer base class for LLSW form factors
+///
+
+//**** This file is a part of the HAMMER library
+//**** Copyright (C) 2016 - 2026 The HAMMER Collaboration
+//**** HAMMER is licensed under version 3 of the GPL; see COPYING for details
+//**** Please note the MCnet academic guidelines; see GUIDELINES for details
+
+// -*- C++ -*-
+#ifndef HAMMER_FF_LLSW_BASE
+#define HAMMER_FF_LLSW_BASE
+
+#include "Hammer/FormFactorBase.hh"
+#include "Hammer/FormFactors/AsCoeffs.hh"
+
+namespace Hammer {
+
+    /// @brief Base class for LLSW form factors
+    ///
+    /// @ingroup FormFactors
+    class FFLLSWBase : public FF1to1Base {
+
+    public:
+
+        FFLLSWBase();
+
+        FFLLSWBase(const FFLLSWBase& other) = default;
+        FFLLSWBase& operator=(const FFLLSWBase& other) = delete;
+        FFLLSWBase(FFLLSWBase&& other) = delete;
+        FFLLSWBase& operator=(FFLLSWBase&& other) = delete;
+        ~FFLLSWBase() override = default;
+
+    protected:
+
+        /// @brief
+        /// @param[in] point
+        /// @param[in] masses
+        /// @return
+        void evalAtPSPoint(const std::vector<double>& point, const std::vector<double>& masses = {}) override = 0;
+
+        /// @brief
+        void defineSettings() override = 0;
+
+
+        void addRefs() const override;
+
+        AsCoeffs _asCorrections;
+    };
+
+} // namespace Hammer
+
+#endif

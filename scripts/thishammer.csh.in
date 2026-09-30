@@ -1,0 +1,214 @@
+# Source this script to set up the HAMMER build that this script is part of.
+#
+# Conveniently an alias like this can be defined in ~/.cshrc:
+#   alias thishammer "source bin/thishammer.sh"
+#
+# This script if for the csh like shells, see thishammer.sh for bash like shells.
+#
+# Author: Fons Rademakers, 18/8/2006
+
+if ($?HAMMERSYS) then
+   if ($HAMMERSYS != "") then
+     set old_hammersys="$HAMMERSYS"
+   endif
+endif
+
+# $_ should be source .../thishammer.csh
+set ARGS=($_)
+
+set LSOF=`env PATH=/usr/sbin:${PATH} which lsof`
+set thisfile="`${LSOF} -w +p $$ | grep -oE '/.*thishammer.csh'  `"
+if ( "$thisfile" == "" ) then
+#   set thisfile=/does/not/exist
+endif
+if ( "$thisfile" != "" && -e ${thisfile} ) then
+   # We found it, didn't we.
+   set thishammer="`dirname ${thisfile}`"
+else if ("$ARGS" != "") then
+   set thishammer="`dirname ${ARGS[2]}`"
+else
+   # But $_ might not be set if the script is source non-interactively.
+   # In [t]csh the sourced file is inserted 'in place' inside the
+   # outer script, so we need an external source of information
+   # either via the current directory or an extra parameter.
+   if ( -e thishammer.csh ) then
+      set thishammer=${PWD}
+   else if ( -e bin/thishammer.csh ) then
+      set thishammer=${PWD}/bin
+   else if ( "$1" != "" ) then
+      if ( -e ${1}/bin/thishammer.csh ) then
+         set thishammer=${1}/bin
+      else if ( -e ${1}/thishammer.csh ) then
+         set thishammer=${1}
+      else
+         echo "thishammer.csh: ${1} does not contain a HAMMER installation"
+      endif
+   else
+      echo 'Error: The call to "source where_hammer_is/bin/thishammer.csh" can not determine the location of the HAMMER installation'
+      echo "because it was embedded another script (this is an issue specific to csh)."
+      echo "Use either:"
+      echo "   cd where_hammer_is; source bin/thishammer.csh"
+      echo "or"
+      echo "   source where_hammer_is/bin/thishammer.csh where_hammer_is"
+   endif
+endif
+
+if ($?thishammer) then
+
+setenv HAMMERSYS "`(cd ${thishammer}/..;pwd)`"
+
+if ($?old_hammersys) then
+   setenv PATH `set DOLLAR='$'; echo $PATH | sed -e "s;:$old_hammersys/bin:;:;g" \
+                                 -e "s;:$old_hammersys/bin${DOLLAR};;g"   \
+                                 -e "s;^$old_hammersys/bin:;;g"   \
+                                 -e "s;^$old_hammersys/bin${DOLLAR};;g"`
+   if ($?LD_LIBRARY_PATH) then
+      setenv LD_LIBRARY_PATH `set DOLLAR='$'; echo $LD_LIBRARY_PATH | \
+                             sed -e "s;:$old_hammersys/lib:;:;g" \
+                                 -e "s;:$old_hammersys/lib${DOLLAR};;g"   \
+                                 -e "s;^$old_hammersys/lib:;;g"   \
+                                 -e "s;^$old_hammersys/lib${DOLLAR};;g"`
+   endif
+   if ($?DYLD_LIBRARY_PATH) then
+      setenv DYLD_LIBRARY_PATH `set DOLLAR='$'; echo $DYLD_LIBRARY_PATH | \
+                             sed -e "s;:$old_hammersys/lib:;:;g" \
+                                 -e "s;:$old_hammersys/lib${DOLLAR};;g"   \
+                                 -e "s;^$old_hammersys/lib:;;g"   \
+                                 -e "s;^$old_hammersys/lib${DOLLAR};;g"`
+   endif
+   if ($?SHLIB_PATH) then
+      setenv SHLIB_PATH `set DOLLAR='$'; echo $SHLIB_PATH | \
+                             sed -e "s;:$old_hammersys/lib:;:;g" \
+                                 -e "s;:$old_hammersys/lib${DOLLAR};;g"   \
+                                 -e "s;^$old_hammersys/lib:;;g"   \
+                                 -e "s;^$old_hammersys/lib${DOLLAR};;g"`
+   endif
+   if ($?LIBPATH) then
+      setenv LIBPATH `set DOLLAR='$'; echo $LIBPATH | \
+                             sed -e "s;:$old_hammersys/lib:;:;g" \
+                                 -e "s;:$old_hammersys/lib${DOLLAR};;g"   \
+                                 -e "s;^$old_hammersys/lib:;;g"   \
+                                 -e "s;^$old_hammersys/lib${DOLLAR};;g"`
+   endif
+   if ($?PYTHONPATH) then
+      setenv PYTHONPATH `set DOLLAR='$'; echo $PYTHONPATH | \
+                             sed -e "s;:$old_hammersys/lib:;:;g" \
+                                 -e "s;:$old_hammersys/lib${DOLLAR};;g"   \
+                                 -e "s;^$old_hammersys/lib:;;g"   \
+                                 -e "s;^$old_hammersys/lib${DOLLAR};;g"`
+   endif
+   # Now in case gnuinstall was on
+   if ($?LD_LIBRARY_PATH) then
+      setenv LD_LIBRARY_PATH `set DOLLAR='$'; echo $LD_LIBRARY_PATH | \
+                             sed -e "s;:$old_hammersys/lib/Hammer:;:;g" \
+                                 -e "s;:$old_hammersys/lib/Hammer${DOLLAR};;g"   \
+                                 -e "s;^$old_hammersys/lib/Hammer:;;g"   \
+                                 -e "s;^$old_hammersys/lib/Hammer${DOLLAR};;g"`
+   endif
+   if ($?DYLD_LIBRARY_PATH) then
+      setenv DYLD_LIBRARY_PATH `set DOLLAR='$'; echo $DYLD_LIBRARY_PATH | \
+                             sed -e "s;:$old_hammersys/lib/Hammer:;:;g" \
+                                 -e "s;:$old_hammersys/lib/Hammer${DOLLAR};;g"   \
+                                 -e "s;^$old_hammersys/lib/Hammer:;;g"   \
+                                 -e "s;^$old_hammersys/lib/Hammer${DOLLAR};;g"`
+   endif
+   if ($?SHLIB_PATH) then
+      setenv SHLIB_PATH `set DOLLAR='$'; echo $SHLIB_PATH | \
+                             sed -e "s;:$old_hammersys/lib/Hammer:;:;g" \
+                                 -e "s;:$old_hammersys/lib/Hammer${DOLLAR};;g"   \
+                                 -e "s;^$old_hammersys/lib/Hammer:;;g"   \
+                                 -e "s;^$old_hammersys/lib/Hammer${DOLLAR};;g"`
+   endif
+   if ($?LIBPATH) then
+      setenv LIBPATH `set DOLLAR='$'; echo $LIBPATH | \
+                             sed -e "s;:$old_hammersys/lib/Hammer:;:;g" \
+                                 -e "s;:$old_hammersys/lib/Hammer${DOLLAR};;g"   \
+                                 -e "s;^$old_hammersys/lib/Hammer:;;g"   \
+                                 -e "s;^$old_hammersys/lib/Hammer${DOLLAR};;g"`
+   endif
+   if ($?PYTHONPATH) then
+      setenv PYTHONPATH `set DOLLAR='$'; echo $PYTHONPATH | \
+                             sed -e "s;:$old_hammersys/lib/python@Python3_VERSION_MAJOR@.@Python3_VERSION_MINOR@/site-packages:;:;g" \
+                                 -e "s;:$old_hammersys/lib/python@Python3_VERSION_MAJOR@.@Python3_VERSION_MINOR@/site-packages${DOLLAR};;g"   \
+                                 -e "s;^$old_hammersys/lib/python@Python3_VERSION_MAJOR@.@Python3_VERSION_MINOR@/site-packages:;;g"   \
+                                 -e "s;^$old_hammersys/lib/python@Python3_VERSION_MAJOR@.@Python3_VERSION_MINOR@/site-packages${DOLLAR};;g"`
+   endif
+   if ($?ROOT_INCLUDE_PATH) then
+      setenv ROOT_INCLUDE_PATH `set DOLLAR='$'; echo $ROOT_INCLUDE_PATH | \
+                             sed -e "s;:$old_hammersys/include:;:;g" \
+                                 -e "s;:$old_hammersys/include${DOLLAR};;g"   \
+                                 -e "s;^$old_hammersys/include:;;g"   \
+                                 -e "s;^$old_hammersys/include${DOLLAR};;g"`
+   endif
+   if ($?CMAKE_PREFIX_PATH) then
+      setenv CMAKE_PREFIX_PATH `set DOLLAR='$'; echo $CMAKE_PREFIX_PATH | \
+                             sed -e "s;:${old_hammersys}:;:;g" \
+                                 -e "s;:${old_hammersys}${DOLLAR};;g"   \
+                                 -e "s;^${old_hammersys}:;;g"   \
+                                 -e "s;^${old_hammersys}${DOLLAR};;g"`
+   endif
+
+endif
+
+
+
+set path = (@CMAKE_INSTALL_PREFIX@/bin $path)
+
+if ($?LD_LIBRARY_PATH) then
+   setenv LD_LIBRARY_PATH @HAMMER_EXTRA_LIBPATH@@CMAKE_INSTALL_PREFIX@/lib/Hammer:$LD_LIBRARY_PATH      # Linux, ELF HP-UX
+else
+   setenv LD_LIBRARY_PATH @HAMMER_EXTRA_LIBPATH@@CMAKE_INSTALL_PREFIX@/lib/Hammer
+endif
+
+if ($?DYLD_LIBRARY_PATH) then
+   setenv DYLD_LIBRARY_PATH @HAMMER_EXTRA_LIBPATH@@CMAKE_INSTALL_PREFIX@/lib/Hammer:$DYLD_LIBRARY_PATH  # Mac OS X
+else
+   setenv DYLD_LIBRARY_PATH @HAMMER_EXTRA_LIBPATH@@CMAKE_INSTALL_PREFIX@/lib/Hammer
+endif
+
+if ($?SHLIB_PATH) then
+   setenv SHLIB_PATH @HAMMER_EXTRA_LIBPATH@@CMAKE_INSTALL_PREFIX@/lib/Hammer:$SHLIB_PATH                # legacy HP-UX
+else
+   setenv SHLIB_PATH @HAMMER_EXTRA_LIBPATH@@CMAKE_INSTALL_PREFIX@/lib/Hammer
+endif
+
+if ($?LIBPATH) then
+   setenv LIBPATH @HAMMER_EXTRA_LIBPATH@@CMAKE_INSTALL_PREFIX@/lib/Hammer:$LIBPATH                      # AIX
+else
+   setenv LIBPATH @HAMMER_EXTRA_LIBPATH@@CMAKE_INSTALL_PREFIX@/lib/Hammer
+endif
+
+if ($?PYTHONPATH) then
+   setenv PYTHONPATH @CMAKE_INSTALL_PREFIX@/lib/python@Python3_VERSION_MAJOR@.@Python3_VERSION_MINOR@/site-packages:$PYTHONPATH
+else
+   setenv PYTHONPATH @CMAKE_INSTALL_PREFIX@/lib/python@Python3_VERSION_MAJOR@.@Python3_VERSION_MINOR@/site-packages
+endif
+
+if ("@PYHEPMC3_SITE_PACKAGES@" != "") then
+   if ($?PYTHONPATH) then
+      setenv PYTHONPATH @PYHEPMC3_SITE_PACKAGES@:$PYTHONPATH
+   else
+      setenv PYTHONPATH @PYHEPMC3_SITE_PACKAGES@
+   endif
+endif
+
+if ($?ROOT_INCLUDE_PATH) then
+   setenv ROOT_INCLUDE_PATH @CMAKE_INSTALL_PREFIX@/include:$ROOT_INCLUDE_PATH
+else
+   setenv ROOT_INCLUDE_PATH @CMAKE_INSTALL_PREFIX@/include
+endif
+
+if ($?CMAKE_PREFIX_PATH) then
+   setenv CMAKE_PREFIX_PATH ${HAMMERSYS}:$CMAKE_PREFIX_PATH
+else
+   setenv CMAKE_PREFIX_PATH ${HAMMERSYS}
+endif
+
+
+# Prevent Cppyy from checking the PCH (and avoid warning)
+setenv CLING_STANDARD_PCH none
+
+endif # if ("$thishammer" != "")
+
+set thishammer=
+set old_hammersys=

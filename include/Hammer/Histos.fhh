@@ -1,0 +1,27 @@
+///
+/// @file  Histos.fhh
+/// @brief Forward declarations for histogram manager class
+///
+
+//**** This file is a part of the HAMMER library
+//**** Copyright (C) 2016 - 2026 The HAMMER Collaboration
+//**** HAMMER is licensed under version 3 of the GPL; see COPYING for details
+//**** Please note the MCnet academic guidelines; see GUIDELINES for details
+
+// -*- C++ -*-
+#ifndef HAMMER_HISTOS_FHH
+#define HAMMER_HISTOS_FHH
+
+#include <map>
+#include <string>
+
+namespace Hammer {
+
+    template <typename T>
+    using HistoNameDict = std::map<std::string, T>;
+
+    class Histos;
+
+} // namespace Hammer
+
+#endif

@@ -1,0 +1,2 @@
+_use_root = @HAMMER_USE_ROOT_PYTHON@
+_install_prefix = "@CMAKE_INSTALL_PREFIX@"

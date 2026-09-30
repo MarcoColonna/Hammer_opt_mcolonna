@@ -1,0 +1,9 @@
+# Hammer ver. @PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@ configuration settings
+
+Run:
+  RunName: Run01
+SimulationHandler:
+  BFieldValue: 8.5
+WriterHandler:
+  MaxEvents: 100
+  WriteEvents: true

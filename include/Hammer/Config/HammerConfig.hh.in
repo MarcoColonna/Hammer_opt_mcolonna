@@ -1,0 +1,55 @@
+///
+/// @file  HammerConfig.hh
+/// @brief Hammer configuration definitions
+///
+
+//**** This file is a part of the HAMMER library
+//**** Copyright (C) 2016 - 2026 The HAMMER Collaboration
+//**** HAMMER is licensed under version 3 of the GPL; see COPYING for details
+//**** Please note the MCnet academic guidelines; see GUIDELINES for details
+
+// -*- C++ -*-
+#ifndef HAMMER_HAMMERConfig_HH
+#define HAMMER_HAMMERConfig_HH
+
+
+#cmakedefine USE_BOOST_FILESYSTEM
+
+/* "HAMMER contact email address" */
+#define HAMMER_BUGREPORT "@HAMMER_BUGREPORT@"
+
+/* "HAMMER name std::string" */
+#define HAMMER_NAME "@PROJECT_NAME@"
+
+/* "HAMMER short name std::string" */
+#define HAMMER_TARNAME "@HAMMER_TARNAME@"
+
+/* "HAMMER version std::string" */
+#define HAMMER_VERSION "@Hammer_VERSION_MAJOR@.@Hammer_VERSION_MINOR@"
+/* "HAMMER version numbers" */
+#define HAMMER_VERSION_MAJOR @Hammer_VERSION_MAJOR@
+#define HAMMER_VERSION_MINOR @Hammer_VERSION_MINOR@
+#define HAMMER_VERSION_PATCH @Hammer_VERSION_PATCH@
+
+/* "HAMMER version std::string" */
+#define HAMMER_URL "@HAMMER_URL@"
+
+#define CPP_STANDARD @CMAKE_CXX_STANDARD@
+
+/* "ROOT presence flag" */
+#cmakedefine HAVE_ROOT
+
+#define HAMMER_LIBRARY_DIR "@CMAKE_INSTALL_PREFIX@/lib"
+#define HAMMER_ARCHIVE_DIR "@CMAKE_INSTALL_PREFIX@/lib"
+#define HAMMER_BINARY_DIR "@CMAKE_INSTALL_PREFIX@/bin"
+#define HAMMER_DATA_DIR "@CMAKE_INSTALL_PREFIX@/share/HAMMER-@HAMMER_VERSION_MAJOR@.@HAMMER_VERSION_MINOR@"
+
+#define YAMLCPP_API 5 // @YamlCpp_MAJOR_VERSION@
+
+#define CACHE_LINE_SIZE @L2_Cache_Width@
+
+#define PLATFORM_BIG_ENDIAN @IS_BIG_ENDIAN@
+
+#define INCLRCONFIG "@FIXROOTINCL@RConfig.h"
+
+#endif

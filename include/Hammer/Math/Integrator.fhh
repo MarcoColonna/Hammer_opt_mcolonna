@@ -1,0 +1,29 @@
+///
+/// @file  Integrator.fhh
+/// @brief Hammer numerical integration forward declarations
+///
+
+//**** This file is a part of the HAMMER library
+//**** Copyright (C) 2016 - 2026 The HAMMER Collaboration
+//**** HAMMER is licensed under version 3 of the GPL; see COPYING for details
+//**** Please note the MCnet academic guidelines; see GUIDELINES for details
+
+// -*- C++ -*-
+#ifndef HAMMER_MATH_Integrator_FHH
+#define HAMMER_MATH_Integrator_FHH
+
+#include <functional>
+#include <vector>
+#include <utility>
+
+namespace Hammer {
+
+    using BoundaryFunction = std::function<std::pair<double, double>(const std::vector<double>&)>;
+    using IntegrationBoundaries = std::vector<BoundaryFunction>;
+    using EvaluationGrid = std::vector<std::vector<double>>;
+    using EvaluationWeights = std::vector<double>;
+
+
+} // namespace Hammer
+
+#endif

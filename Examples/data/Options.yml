@@ -1,0 +1,41 @@
+# Hammer ver. 1.0 option card
+
+Hammer:
+  CalcHistograms: true
+  CalcProcesses: true
+  Units: GeV
+Histos:
+  KeepErrors: false
+ProcessCalc:
+  FormFactors: true
+  SquaredAmplitudes: true
+  Amplitudes: true
+  Rates: true
+  Weights: true
+ProcessWrite:
+  Amplitudes: true
+  SquaredAmplitudes: true
+  FormFactors: true
+BtoDBLPR:
+  RhoSq: 1.24
+  a: 1.067024
+  as: 0.26
+  mb: 4.71
+  mc: 1.31
+  la: 0.57115
+  ebR/eb: 0.861
+  ecR/ec: 0.822
+  chi21: -0.06
+  chi2p: 0.0
+  chi3p: 0.05
+  eta1: 0.3
+  etap: -0.05
+  dV20: 0.0
+BtoDCLN:
+  a: 1.0
+  RhoSq: 1.186
+  G1: 1.082
+  Delta: 1.
+  as: 0.26
+  la: 0.48
+  mcOnmb: 0.29

@@ -1,0 +1,58 @@
+///
+/// @file  HammerModules.hh
+/// @brief Hammer available modules header
+///
+
+//**** This file is a part of the HAMMER library
+//**** Copyright (C) 2016 - 2026 The HAMMER Collaboration
+//**** HAMMER is licensed under version 3 of the GPL; see COPYING for details
+//**** Please note the MCnet academic guidelines; see GUIDELINES for details
+
+// -*- C++ -*-
+#ifndef HAMMER_HAMMERModules_HH
+#define HAMMER_HAMMERModules_HH
+
+@HAMMER_AMPLITUDES_INCLUDES@
+@HAMMER_FORMFACTORS_INCLUDES@
+@HAMMER_RATES_INCLUDES@
+
+#define ADD(ELEM, CONT, TYP)                                       \
+    do {                                                           \
+        unique_ptr<TYP> pEntry(new ELEM{});                        \
+        size_t counts = pEntry->numSignatures();                   \
+        CONT.emplace(pEntry->id(), std::move(pEntry));             \
+        for (size_t i = 1; i < counts; ++i) {                      \
+            unique_ptr<TYP> pEntryNext(new ELEM{});                \
+            pEntryNext->setSignatureIndex(i);                      \
+            CONT.emplace(pEntryNext->id(), std::move(pEntryNext)); \
+        }                                                          \
+    } while (0)
+
+#define ADDV(ELEM, CONT, TYP)                                           \
+    do {                                                                \
+        unique_ptr<TYP> pEntry(new ELEM{});                             \
+        size_t counts = pEntry->numSignatures();                        \
+        CONT[pEntry->id()].emplace_back(std::move(pEntry));             \
+        for (size_t i = 1; i < counts; ++i) {                           \
+            unique_ptr<TYP> pEntryNext(new ELEM{});                     \
+            pEntryNext->setSignatureIndex(i);                           \
+            CONT[pEntryNext->id()].emplace_back(std::move(pEntryNext)); \
+        }                                                               \
+    } while (0)
+
+#define ADD_AMPLITUDES(CONT) \
+    do {                     \
+        @AMPL_BODY@          \
+    } while (0)
+
+#define ADD_FORMFACTORS(CONT) \
+    do {                      \
+        @FF_BODY@             \
+    } while (0)
+
+#define ADD_RATES(CONT) \
+    do {                \
+        @RATE_BODY@     \
+    } while (0)
+
+#endif

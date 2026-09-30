@@ -1,0 +1,15 @@
+.vscode/*
+*.pyc
+Python ME scripts/old/pS.dat
+Python ME scripts/old/pSDstar.dat
+*.pdf
+*.so
+*.o
+*.swp
+Talks/*
+Docs/*
+docs/*
+build/*
+.clangd
+\.DS_Store
+UserPresetBase.json

@@ -1,0 +1,55 @@
+///
+/// @file  MultiDimensional.fhh
+/// @brief Forward declarations of types used in the tensor classes
+///
+
+//**** This file is a part of the HAMMER library
+//**** Copyright (C) 2016 - 2026 The HAMMER Collaboration
+//**** HAMMER is licensed under version 3 of the GPL; see COPYING for details
+//**** Please note the MCnet academic guidelines; see GUIDELINES for details
+
+// -*- C++ -*-
+#ifndef HAMMER_MATH_MULTIDIMENSIONAL_FHH
+#define HAMMER_MATH_MULTIDIMENSIONAL_FHH
+
+#include <cstdint>
+#include <set>
+#include <utility>
+#include <vector>
+#include <memory>
+
+namespace Hammer {
+
+    using IndexType = uint16_t; // Lots of space for integrator dimensions
+    using IndexPair = std::pair<IndexType, IndexType>;
+    using IndexList = std::vector<IndexType>;
+    using UniqueIndexList = std::set<IndexType>;
+    using IndexPairList = std::vector<IndexPair>;
+    // using IndexBoolPairList = std::vector<std::pair<IndexType, bool>>;
+
+    using LabelSignature = std::pair<size_t, bool>; // Index and sign of first element
+
+    using PositionType = size_t;
+    using PositionPair = std::pair<PositionType, PositionType>;
+    using PositionList = std::vector<PositionType>;
+    using PositionPairList = std::vector<PositionPair>;
+
+    using PosIndexPair = std::pair<PositionType, IndexType>;
+    using PosIndexPairList = std::vector<PosIndexPair>;
+
+    enum IndexLabel : int64_t;
+    using LabelPair = std::pair<IndexLabel, IndexLabel>;
+    using LabelsList = std::vector<IndexLabel>;
+    using UniqueLabelsList = std::set<IndexLabel>;
+    using LabelPairsSet = std::set<LabelPair>;
+
+    namespace MultiDimensional {
+
+        class IContainer;
+        using TensorData = std::unique_ptr<IContainer>;
+        using SharedTensorData = std::shared_ptr<IContainer>;
+    } // namespace MultiDimensional
+
+} // namespace Hammer
+
+#endif

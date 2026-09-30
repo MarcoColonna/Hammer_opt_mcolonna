@@ -1,0 +1,29 @@
+# Hammer ver. @PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@ configuration settings
+
+BtoCMuNu:
+  SM: [1, 0]
+  S_qLlL: [0, 0]
+  S_qLlR: [0, 0]
+  S_qRlL: [0, 0]
+  S_qRlR: [0, 0]
+  T_qLlL: [0, 0]
+  T_qRlR: [0, 0]
+  V_qLlL: [0, 0]
+  V_qLlR: [0, 0]
+  V_qRlL: [0, 0]
+  V_qRlR: [0, 0]
+BtoCMuNu@RH:
+  DIM1: [0, 0]
+  DIM2: [0, 0]
+BtoCTauNu:
+  SM: [1, 0]
+  S_qLlL: [0, 0]
+  S_qLlR: [0, 0]
+  S_qRlL: [0, 0]
+  S_qRlR: [0, 0]
+  T_qLlL: [0, 0]
+  T_qRlR: [0, 0]
+  V_qLlL: [0, 0]
+  V_qLlR: [0, 0]
+  V_qRlL: [0, 0]
+  V_qRlR: [0, 0]

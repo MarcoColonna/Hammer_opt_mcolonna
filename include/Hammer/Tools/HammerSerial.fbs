@@ -1,0 +1,195 @@
+
+///
+/// @file  HammerSerial.fbs
+/// @brief FlatBuffers data structure definition for serialization
+///
+
+namespace Hammer.Serial;
+
+struct FBComplex {
+	re:double;
+	im:double;
+}
+
+table FBVecDouble {
+	value: [double];
+}
+
+table FBIdSet {
+	ids: [ulong];
+}
+
+table FBSingleTensor {
+	vals: [FBComplex];
+	pos: [uint32];
+	labels: [int16];
+	dims: [uint16];
+	sparse: bool;
+	labelpadsindices: [uint8];
+	labelpadsvalues: [uint32];
+}
+
+table FBTensorListEntry {
+	idx: [uint16];
+	conj: [bool];
+}
+
+table FBTensorList {
+	vals: [FBSingleTensor];
+	entries: [FBTensorListEntry];
+}
+
+union FBTensorTypes { FBComplex, FBSingleTensor, FBTensorList }
+
+table FBTensor {
+	name: string;
+	data: FBTensorTypes;
+}
+
+table FBEvtIdSet {
+	evtids: [FBIdSet];
+	labels: [int16];
+	labelpadsindices: [uint8];
+	labelpadsvalues: [uint32];
+}
+
+table FBHistogram {
+	name: string;
+	idset: FBEvtIdSet;
+	scheme: string;
+	n: [ulong];
+	w: [FBTensor];
+	w2: [FBTensor];
+	pos: [ushort];
+	specialization: string;
+}
+
+table FBHistoDefinition {
+	name: string;
+	dims: [uint16];
+	uoverflow: bool;
+	edges: [FBVecDouble];
+	compress: bool;
+	keeperrors: bool;
+	fixedlabels: [int16];
+	fixeddata: [FBSingleTensor];
+}
+
+table FBFFScheme {
+	name: string;
+	ffids: [ulong];
+	ffschemes: [ushort];
+	ffproc: [string];
+	ffgroup: [string];
+}
+
+table FBFormFactor {
+	id: string;
+	ffsvals: [FBTensor];
+	ffkinematics: [FBVecDouble];
+}
+
+table FBRate {
+	id: ulong;
+	ratevals: [FBTensor];
+	ratenames: [string];
+	ratespecs: [string];
+}
+
+struct FBSBool {
+	value: bool;
+}
+
+struct FBSInt {
+	value: int;
+}
+
+struct FBSDouble {
+	value: double;
+}
+
+table FBSString {
+	value: string;
+}
+
+table FBVecString {
+	value: [string];
+}
+
+table FBSVecVecDouble {
+	value: [FBVecDouble];
+}
+
+union FBSettingTypes { FBSBool, FBSInt, FBSDouble, FBSString, FBComplex, FBVecDouble, FBVecString, FBSVecVecDouble }
+
+table FBSetting {
+	name: string;
+	value: FBSettingTypes;
+}
+
+table FBProcDefs {
+	includenames: [FBVecString];
+	forbidnames: [FBVecString];
+	includeprocsverts: [FBIdSet];
+	includeprocsid: [ulong];
+	forbidprocs: FBIdSet;
+}
+
+table FBPurePS {
+	labels: [string];
+	ids: [ulong];
+}
+
+struct FBVersion {
+	major:uint8;
+	minor:uint8;
+	patch:uint8;
+}
+
+table FBHeader {
+	ffschemes: [FBFFScheme];
+	processdefs: FBProcDefs;
+	pureps: [FBPurePS];
+	settings: [FBSetting];
+	specs: [FBSpecialization];
+	version: FBVersion;
+}
+
+table FBProcIDs {
+	id: ulong;
+	idfull: [ulong];
+}
+
+table FBProcData {
+	ampnum: FBTensor;
+	ampden: FBTensor;
+	amp2num: FBTensor;
+	amp2den: FBTensor;
+	formfacts: [FBFormFactor];
+	weightames: [string];
+	weighvalues: [FBTensor];
+	weighspecs: [string];
+}
+
+table FBProcess {
+	ids: FBProcIDs;
+	data: FBProcData;
+}
+
+table FBEvent {
+	id: FBIdSet;
+	weight: double;
+	processes: [FBProcess];
+}
+
+table FBRates {
+	rates: [FBRate];
+}
+
+table FBSpecialization {
+	prefix: string;
+	id: string;
+	coords: [string];
+	projector: FBSingleTensor;
+}
+

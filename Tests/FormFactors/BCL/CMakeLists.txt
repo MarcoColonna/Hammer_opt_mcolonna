@@ -1,0 +1,10 @@
+set (Hammer_FormFactors_TEST_LIBS FormFactors)
+
+new_test (FFBtoPiBCL "${Hammer_FormFactors_TEST_LIBS}")
+new_test (FFBtoPiBCLVar "${Hammer_FormFactors_TEST_LIBS}")
+new_test (FFBstoKBCL "${Hammer_FormFactors_TEST_LIBS}")
+new_test (FFBstoKBCLVar "${Hammer_FormFactors_TEST_LIBS}")
+new_test (FFBtoDBCL "${Hammer_FormFactors_TEST_LIBS}")
+new_test (FFBtoDBCLVar "${Hammer_FormFactors_TEST_LIBS}")
+new_test (FFBstoDsBCL "${Hammer_FormFactors_TEST_LIBS}")
+new_test (FFBstoDsBCLVar "${Hammer_FormFactors_TEST_LIBS}")

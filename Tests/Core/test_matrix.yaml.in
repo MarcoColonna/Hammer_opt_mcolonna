@@ -1,0 +1,4 @@
+# Hammer ver. @PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@ configuration settings
+
+Parent:
+  Matrix: [[5, 6, 7, 8, 9], [15, 16, 17, 18, 19], [25, 26, 27, 28, 29], [35, 36, 37, 38, 39]]

@@ -1,0 +1,194 @@
+{
+    "version": 8,
+    "include": ["UserPresetBase.json"],
+    "configurePresets": [
+        {
+            "name": "Debug",
+            "displayName": "Static Debug",
+            "description": "Verbose, with Tests, ROOT, Examples, no Python, no Sanitizers",
+            "inherits": "Base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "ENABLE_TESTS": "ON",
+                "VERBOSE_DEBUG": "ON",
+                "WITH_PYTHON": "OFF",
+                "WITH_EXAMPLES": "ON",
+                "WITH_ROOT": "ON"
+            } 
+        },
+        {
+            "name": "PythonDebug",
+            "displayName": "Static Debug /w Python",
+            "description": "Verbose, With Tests, ROOT, Examples, and Python, no Sanitizers",
+            "inherits": "Base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "ENABLE_TESTS": "ON",
+                "VERBOSE_DEBUG": "ON",
+                "WITH_PYTHON": "ON",
+                "WITH_EXAMPLES": "ON",
+                "WITH_ROOT": "ON"
+            } 
+        },
+        {
+            "name": "PythonNoRootDebug",
+            "displayName": "Static Debug /w Python and no ROOT",
+            "description": "Verbose, With Tests, Examples, and Python, no ROOT, Sanitizers",
+            "inherits": "Base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "ENABLE_TESTS": "ON",
+                "VERBOSE_DEBUG": "ON",
+                "WITH_PYTHON": "ON",
+                "WITH_EXAMPLES": "ON",
+                "WITH_ROOT": "OFF"
+            } 
+        },
+        {
+            "name": "PythonCythonDebug",
+            "displayName": "Static Debug /w Python (Cython, no ROOT)",
+            "description": "Verbose, With Tests, Examples, Python via Cython, no ROOT, no Sanitizers",
+            "inherits": "Base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "ENABLE_TESTS": "ON",
+                "VERBOSE_DEBUG": "ON",
+                "WITH_PYTHON": "ON",
+                "WITH_EXAMPLES": "ON",
+                "WITH_ROOT": "OFF",
+                "PYTHON_USE_CPPYY": "OFF"
+            }
+        },
+        {
+            "name": "SharedDebug",
+            "displayName": "Shared Debug",
+            "description": "Verbose, With Tests, ROOT, Examples, no Python, no Sanitizers",
+            "inherits": "Base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "BUILD_SHARED_LIBS": "ON",
+                "ENABLE_TESTS": "ON",
+                "VERBOSE_DEBUG": "ON",
+                "WITH_PYTHON": "OFF",
+                "WITH_EXAMPLES": "ON",
+                "WITH_ROOT": "ON"
+            } 
+        },
+        {
+            "name": "Sanitize",
+            "displayName": "Sanitize Static Debug",
+            "description": "Verbose, With Tests, ROOT, Examples, Python, Sanitizers",
+            "inherits": "Base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "ENABLE_TESTS": "ON",
+                "VERBOSE_DEBUG": "ON",
+                "SANITIZE": "ON",
+                "WITH_PYTHON": "ON",
+                "WITH_EXAMPLES": "ON",
+                "WITH_ROOT": "ON"
+            } 
+        },
+        {
+            "name": "Release",
+            "displayName": "Static Release",
+            "description": "With Tests, ROOT, Examples, no Python",
+            "inherits": "Base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "ENABLE_TESTS": "ON",
+                "WITH_PYTHON": "OFF",
+                "WITH_EXAMPLES": "ON",
+                "WITH_ROOT": "ON"
+            } 
+        },
+        {
+            "name": "PythonRelease",
+            "displayName": "Static Release w/ Python",
+            "description": "With Tests, ROOT, Examples, Python",
+            "inherits": "Base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "ENABLE_TESTS": "ON",
+                "WITH_PYTHON": "ON",
+                "WITH_EXAMPLES": "ON",
+                "WITH_ROOT": "ON"
+            } 
+        },
+        {
+            "name": "Profile",
+            "displayName": "Static Profile",
+            "description": "With Tests, ROOT, Examples, coverage, no Python",
+            "inherits": "Base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+                "ENABLE_TESTS": "ON",
+                "WITH_PYTHON": "OFF",
+                "WITH_EXAMPLES": "ON",
+                "WITH_ROOT": "ON",
+                "COVERAGE": "ON"
+            } 
+        },
+        {
+            "name": "SharedProfile",
+            "displayName": "Shared Profile",
+            "description": "With Tests, ROOT, Examples, coverage, no Python",
+            "inherits": "Base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+                "BUILD_SHARED_LIBS": "ON",
+                "ENABLE_TESTS": "ON",
+                "WITH_PYTHON": "OFF",
+                "WITH_EXAMPLES": "ON",
+                "WITH_ROOT": "ON",
+                "COVERAGE": "ON"
+            } 
+        },
+        {
+            "name": "GCCDebug",
+            "displayName": "Static Debug (GCC)",
+            "description": "Verbose, with Tests, ROOT, Examples, no Python, using Homebrew GCC 15",
+            "inherits": "Base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_C_COMPILER": "/opt/homebrew/bin/gcc-15",
+                "CMAKE_CXX_COMPILER": "/opt/homebrew/bin/g++-15",
+                "CMAKE_C_LINK_EXECUTABLE": "<CMAKE_COMMAND> -E touch <TARGET>",
+                "CMAKE_CXX_LINK_EXECUTABLE": "<CMAKE_COMMAND> -E touch <TARGET>",
+                "ENABLE_TESTS": "ON",
+                "VERBOSE_DEBUG": "ON",
+                "WITH_PYTHON": "OFF",
+                "WITH_EXAMPLES": "ON",
+                "WITH_ROOT": "ON"
+            }
+        },
+        {
+            "name": "Xcode",
+            "displayName": "XCode Project",
+            "description": "Using X Code, no Python",
+            "inherits": "Base",
+            "generator": "Xcode",
+            "cacheVariables": {
+                "ENABLE_TESTS": "ON",
+                "VERBOSE_DEBUG": "ON",
+                "WITH_EXAMPLES": "ON"
+            }
+        },
+        {
+            "name": "Tidy",
+            "displayName": "Static Debug (clang-tidy)",
+            "description": "Debug build with CMAKE_CXX_CLANG_TIDY; exports compile_commands.json; no Python",
+            "inherits": "Base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+                "CMAKE_CXX_CLANG_TIDY": "/opt/homebrew/Cellar/llvm/22.1.6/bin/clang-tidy",
+                "ENABLE_TESTS": "ON",
+                "VERBOSE_DEBUG": "OFF",
+                "WITH_PYTHON": "OFF",
+                "WITH_EXAMPLES": "ON",
+                "WITH_ROOT": "ON"
+            }
+        }
+    ]
+}

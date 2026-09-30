@@ -1,0 +1,24 @@
+///
+/// @file  Particle.fhh
+/// @brief Forward declarations for particle class
+///
+
+//**** This file is a part of the HAMMER library
+//**** Copyright (C) 2016 - 2026 The HAMMER Collaboration
+//**** HAMMER is licensed under version 3 of the GPL; see COPYING for details
+//**** Please note the MCnet academic guidelines; see GUIDELINES for details
+
+// -*- C++ -*-
+#ifndef HAMMER_TOOLS_PARTICLE_FHH
+#define HAMMER_TOOLS_PARTICLE_FHH
+
+#include<vector>
+
+namespace Hammer {
+
+    class Particle;
+    using ParticleList = std::vector<Particle>;
+
+} // namespace Hammer
+
+#endif

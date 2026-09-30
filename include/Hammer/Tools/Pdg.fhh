@@ -1,0 +1,21 @@
+///
+/// @file  Pdg.fhh
+/// @brief Pdg forward declarations
+///
+
+//**** This file is a part of the HAMMER library
+//**** Copyright (C) 2016 - 2026 The HAMMER Collaboration
+//**** HAMMER is licensed under version 3 of the GPL; see COPYING for details
+//**** Please note the MCnet academic guidelines; see GUIDELINES for details
+
+// -*- C++ -*-
+#ifndef HAMMER_TOOLS_PDG_FHH
+#define HAMMER_TOOLS_PDG_FHH
+
+namespace Hammer {
+
+    using PdgId = int;
+
+} // namespace Hammer
+
+#endif

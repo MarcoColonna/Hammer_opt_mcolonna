@@ -1,0 +1,113 @@
+# - Finds ROOT instalation
+# This module sets up ROOT information
+# It defines:
+# ROOT_FOUND          If the ROOT is found
+# ROOT_INCLUDE_DIR    PATH to the include directory
+# ROOT_LIBRARIES      Most common libraries
+# ROOT_LIBRARY_DIR    PATH to the library directory
+
+find_program(ROOT_CONFIG_EXECUTABLE root-config
+  PATHS $ENV{ROOTSYS}/bin)
+
+if(NOT ROOT_CONFIG_EXECUTABLE)
+  set(ROOT_FOUND FALSE)
+else()
+  set(ROOT_FOUND TRUE)
+
+  execute_process(
+    COMMAND ${ROOT_CONFIG_EXECUTABLE} --prefix
+    OUTPUT_VARIABLE ROOTSYS
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+  execute_process(
+    COMMAND ${ROOT_CONFIG_EXECUTABLE} --version
+    OUTPUT_VARIABLE ROOT_VERSION
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+  execute_process(
+    COMMAND ${ROOT_CONFIG_EXECUTABLE} --incdir
+    OUTPUT_VARIABLE ROOT_INCLUDE_DIR
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+  execute_process(
+    COMMAND ${ROOT_CONFIG_EXECUTABLE} --libs
+    OUTPUT_VARIABLE ROOT_LIBRARIES
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+  execute_process(
+    COMMAND ${ROOT_CONFIG_EXECUTABLE} --cflags
+    OUTPUT_VARIABLE ROOT_CFLAGS
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+  execute_process(
+    COMMAND ${ROOT_CONFIG_EXECUTABLE} --features
+    OUTPUT_VARIABLE ROOT_FEATURES
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+  if(ROOT_CFLAGS)
+    string(REPLACE " " ";" _OPTS "${ROOT_CFLAGS}")
+
+    foreach(_OPT in ${_OPTS})
+      string(FIND "${_OPT}" "=c++" _POS)
+
+      if(${_POS} GREATER 0)
+        math(EXPR _POS "${_POS}+4")
+        string(SUBSTRING "${_OPT}" ${_POS} 2 _RES)
+        break()
+      else()
+        string(FIND "${_OPT}" "=gnu++" _POS)
+
+        if(${_POS} GREATER 0)
+          math(EXPR _POS "${_POS}+6")
+          string(SUBSTRING "${_OPT}" ${_POS} 2 _RES)
+          break()
+        endif()
+      endif()
+    endforeach()
+  endif()
+
+  if(NOT _RES)
+    if(ROOT_FEATURES)
+      string(REPLACE " " ";" _OPTS "${ROOT_FEATURES}")
+
+      foreach(_OPT in ${_OPTS})
+        string(FIND "${_OPT}" "cxx" _POS)
+
+        if(${_POS} GREATER_EQUAL 0)
+          math(EXPR _POS "${_POS}+3")
+          string(SUBSTRING "${_OPT}" ${_POS} 2 _RES)
+          break()
+        endif()
+      endforeach()
+    endif()
+  endif()
+
+  if(_RES)
+    if("${_RES}" STREQUAL "2a" OR "${_RES}" STREQUAL "20")
+      set(ROOT_CXX_STANDARD 20)
+    elseif("${_RES}" STREQUAL "1z" OR "${_RES}" STREQUAL "17")
+      set(ROOT_CXX_STANDARD 17)
+    elseif("${_RES}" STREQUAL "1y" OR "${_RES}" STREQUAL "14")
+      set(ROOT_CXX_STANDARD 14)
+    else()
+      set(ROOT_CXX_STANDARD 11)
+    endif()
+  else()
+    message(STATUS "Unable to determine C++ dialect used in compiling ROOT.")
+    set(ROOT_CXX_STANDARD 20) # this way it is disabled in the main check and can be controlled by MAX_CXX_STANDARD
+  endif()
+
+  # message(STATUS ${ROOT_CXX_STANDARD})
+
+  # set(ROOT_LIBRARIES ${ROOT_LIBRARIES} -lThread -lMinuit -lHtml -lVMC -lEG -lGeom -lTreePlayer -lXMLIO -lProof)
+  # set(ROOT_LIBRARIES ${ROOT_LIBRARIES} -lProofPlayer -lMLP -lSpectrum -lEve -lRGL -lGed -lXMLParser -lPhysics)
+  set(ROOT_LIBRARY_DIR ${ROOTSYS}/lib)
+
+  # Make variables changeble to the advanced user
+  mark_as_advanced(ROOT_CONFIG_EXECUTABLE)
+
+  if(NOT ROOT_FIND_QUIETLY)
+    message(STATUS "Found ROOT ${ROOT_VERSION} in ${ROOTSYS}")
+  endif()
+endif()
+

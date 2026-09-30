@@ -1,0 +1,33 @@
+///
+/// @file  HammerRoot.fhh
+/// @brief ROOT forward declarations
+///
+
+//**** This file is a part of the HAMMER library
+//**** Copyright (C) 2016 - 2026 The HAMMER Collaboration
+//**** HAMMER is licensed under version 3 of the GPL; see COPYING for details
+//**** Please note the MCnet academic guidelines; see GUIDELINES for details
+
+// -*- C++ -*-
+#ifndef HAMMER_HammerRoot_FHH
+#define HAMMER_HammerRoot_FHH
+
+#include "Hammer/Config/HammerConfig.hh"
+
+#ifdef HAVE_ROOT
+
+class TH1D;
+class TH2D;
+class TH3D;
+class TLorentzVector;
+
+namespace ROOT::Math {
+
+    template <class>
+    class LorentzVector;
+
+}
+
+#endif
+
+#endif

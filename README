@@ -1,0 +1,24 @@
+Copyright (C) 2016 - 2026 The Hammer Collaboration
+
+Hammer is licensed under version 3 of the GPL; see COPYING for details
+Please note the MCnet academic guidelines; see GUIDELINES for details
+
+HAMMER RELEASE VERSION 2.0.0
+
+WEBSITE:
+
+hammer.physics.lbl.gov
+
+ABOUT:
+
+Hammer (Helicity Amplitude Module for Matrix Element Reweighting) is a C++ software library, designed to provide fast and efficient reweighting of large Monte Carlo datasets containing semileptonic b-Hadron decays to any desired New Physics, or to any description of the hadronic matrix elements.
+
+Extensive details of the code structure, capabilities, implementation and use, can be found in the Hammer manual at hammer.physics.lbl.gov
+
+AUTHORS AND CREDITS:
+
+Florian U. Bernlochner
+Stephan Duell
+Zoltan Ligeti
+Michele Papucci
+Dean J. Robinson

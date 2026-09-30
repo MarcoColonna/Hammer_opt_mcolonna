@@ -1,0 +1,8 @@
+include(CMakeFindDependencyMacro)
+
+@HAMMER_FIND_SANITIZERS@
+find_dependency(yaml-cpp @YamlCpp_MIN_VERSION@ CONFIG)
+
+find_dependency(Boost @BOOST_MINREQ_VERSION@ COMPONENTS thread)
+
+@HAMMER_FIND_ROOT@

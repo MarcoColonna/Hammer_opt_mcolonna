@@ -1,0 +1,13 @@
+set(HAMMER_VERSION @HAMMER_VERSION@)
+
+@PACKAGE_INIT@
+
+set_and_check(HAMMER_INCLUDE_DIR "@PACKAGE_INCLUDE_INSTALL_DIR@")
+set_and_check(HAMMER_LIB_DIR "@PACKAGE_LIB_INSTALL_DIR@")
+set_and_check(HAMMER_DATA_DIR "@PACKAGE_DATA_INSTALL_DIR@")
+
+include("${CMAKE_CURRENT_LIST_DIR}/HammerConfigDependencies.cmake")
+
+include("${CMAKE_CURRENT_LIST_DIR}/HammerTargets.cmake")
+
+check_required_components(Hammer)

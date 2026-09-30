@@ -1,0 +1,40 @@
+///
+/// @file  ProcGraph.fhh
+/// @brief Declarations of process graph data structures
+///
+
+//**** This file is a part of the HAMMER library
+//**** Copyright (C) 2016 - 2026 The HAMMER Collaboration
+//**** HAMMER is licensed under version 3 of the GPL; see COPYING for details
+//**** Please note the MCnet academic guidelines; see GUIDELINES for details
+
+// -*- C++ -*-
+#ifndef HAMMER_PROCESSGRAPH_FHH
+#define HAMMER_PROCESSGRAPH_FHH
+
+
+#include <cstdint>
+
+#include "Hammer/IndexTypes.hh"
+
+namespace Hammer {
+
+    class AmplitudeBase;
+
+    enum class AmplType : uint8_t { VERTEX = 0, PARENTEDGE, DAUGHTEREDGE, FULLEDGE };
+
+    struct AmplEntry {
+        AmplitudeBase* ptr;
+        AmplType type;
+    };
+
+    struct SelectedAmplEntry {
+        NumDenPair<AmplEntry> amplitudes;
+        ParticleIndex daughterIdx;
+    };
+
+    class ProcGraph;
+
+} // namespace Hammer
+
+#endif

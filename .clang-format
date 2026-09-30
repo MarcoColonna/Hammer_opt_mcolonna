@@ -1,0 +1,22 @@
+---
+BasedOnStyle: LLVM
+AccessModifierOffset: -4
+AlignEscapedNewlines: LeftWithLastLine
+AllowShortFunctionsOnASingleLine: None
+AlwaysBreakBeforeMultilineStrings: true
+BreakTemplateDeclarations: Yes
+ColumnLimit: 120
+EmptyLineAfterAccessModifier: Always
+EmptyLineBeforeAccessModifier: Always
+IndentWidth: 4
+MaxEmptyLinesToKeep: 2
+NamespaceIndentation: All
+PointerAlignment: Left
+SortIncludes:
+  Enabled: false
+SpaceAfterCStyleCast: true
+Standard: c++17
+TabWidth: 4
+Language: Cpp
+SpaceInEmptyParentheses: false
+SpacesInParentheses: false

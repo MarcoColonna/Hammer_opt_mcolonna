@@ -1,0 +1,11 @@
+#Run this alias script to run the ROOT build script, if needed. 
+
+rootbinpath="$(root-config --bindir)"
+pushd $rootbinpath > /dev/null
+    if [ -f ./thisroot.sh ]; then
+        source thisroot.sh
+    else
+        echo "thisroot script not found"
+    fi
+popd > /dev/null
+

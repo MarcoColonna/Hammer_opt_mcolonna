@@ -1,0 +1,29 @@
+///
+/// @file  Operations.fhh
+/// @brief Tensor operations forward type declarations
+///
+
+//**** This file is a part of the HAMMER library
+//**** Copyright (C) 2016 - 2026 The HAMMER Collaboration
+//**** HAMMER is licensed under version 3 of the GPL; see COPYING for details
+//**** Please note the MCnet academic guidelines; see GUIDELINES for details
+
+// -*- C++ -*-
+#ifndef HAMMER_MATH_MULTIDIM_OPERATIONS_FHH
+#define HAMMER_MATH_MULTIDIM_OPERATIONS_FHH
+
+#include "Hammer/Tools/Loki.hh"
+
+namespace Hammer::MultiDimensional {
+
+    class VectorContainer;
+    class SparseContainer;
+    class OuterContainer;
+
+    using TensorDataTypes = Loki::TypeList<VectorContainer, SparseContainer, OuterContainer>;
+    using ConstTensorDataTypes = Loki::TypeList<const VectorContainer, const SparseContainer, const OuterContainer>;
+
+} // namespace Hammer::MultiDimensional
+
+
+#endif

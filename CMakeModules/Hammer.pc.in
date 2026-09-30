@@ -1,0 +1,12 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+includedir=@CMAKE_INSTALL_FULL_INCLUDEDIR@
+libdir=@CMAKE_INSTALL_FULL_LIBDIR@
+
+Name: Hammer
+Description: Helicity Amplitude Module for Matrix Element Reweighting
+URL: https://hammer.physics.lbl.gov/
+Version: @HAMMER_VERSION@
+Requires.private: yaml-cpp >= @YamlCpp_MIN_VERSION@
+Cflags: -I${includedir} @HAMMER_PC_BOOST_CFLAGS@
+Libs: -L${libdir}/Hammer -lHammerCore -lAmplitudes -lFormFactors -lRates -lHammerBase -lHammerMath -lHammerTensor -lHammerTools
+Libs.private: @HAMMER_PC_BOOST_LIBS@ @HAMMER_PC_ROOT_LIBS@

@@ -1,0 +1,54 @@
+///
+/// @file  HammerSerial.fhh
+/// @brief Forward declaration of serialization related typedefs and includes
+///
+
+//**** This file is a part of the HAMMER library
+//**** Copyright (C) 2016 - 2026 The HAMMER Collaboration
+//**** HAMMER is licensed under version 3 of the GPL; see COPYING for details
+//**** Please note the MCnet academic guidelines; see GUIDELINES for details
+
+// -*- C++ -*-
+#ifndef HAMMER_HammerSerial_FHH
+#define HAMMER_HammerSerial_FHH
+
+#include <stdint.h>
+
+namespace flatbuffers {
+
+    template <bool T>
+    class FlatBufferBuilderImpl;
+    using FlatBufferBuilder = FlatBufferBuilderImpl<false>;
+    template <typename T, typename SizeT>
+    class Vector;
+    template <typename T>
+    struct Offset;
+
+} // namespace flatbuffers
+
+namespace Hammer::Serial {
+
+    struct FBTensor;
+    struct FBEvent;
+    struct FBEventBuilder;
+    struct FBProcess;
+    struct FBProcData;
+    struct FBProcIDs;
+    struct FBProcessBuilder;
+    struct FBHeaderBuilder;
+    struct FBHeader;
+    struct FBHistogram;
+    struct FBHistogramBuilder;
+    struct FBRates;
+    struct FBFFScheme;
+    struct FBSetting;
+    struct FBHistoDefinition;
+    struct FBProcDefs;
+    struct FBPurePS;
+    struct FBSpecialization;
+    enum class FBSettingTypes : uint8_t;
+    enum class FBTensorTypes : uint8_t;
+
+} // namespace Hammer::Serial
+
+#endif

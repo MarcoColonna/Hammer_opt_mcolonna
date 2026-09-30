@@ -1,0 +1,8 @@
+# Hammer ver. 1.0 header card
+
+Processes:
+    Include: [ [ BD*TauNu, D*DPi ], BDTauNu ]
+FormFactors:
+    NumeratorSchemes:
+        Scheme1: { BD: BLPR, BD*: BLPR }
+    Denominator: { BD: ISGW2, BD*: ISGW2 }

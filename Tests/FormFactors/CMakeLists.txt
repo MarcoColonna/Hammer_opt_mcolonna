@@ -1,0 +1,23 @@
+set (Hammer_FormFactors_TEST_LIBS FormFactors)
+
+new_test (AsCoeffs "${Hammer_FormFactors_TEST_LIBS}")
+
+# add tests in subdirectories
+add_subdirectory (BCL)
+add_subdirectory (BGL)
+add_subdirectory (BLPR)
+add_subdirectory (BLPRXP)
+add_subdirectory (BLR)
+add_subdirectory (BLRS)
+add_subdirectory (BLRSXP)
+add_subdirectory (BSZ)
+add_subdirectory (CLN)
+add_subdirectory (EFG)
+add_subdirectory (GKvD)
+add_subdirectory (ISGW2)
+add_subdirectory (Kiselev)
+add_subdirectory (LLSW)
+add_subdirectory (LSPR)
+add_subdirectory (PCR)
+add_subdirectory (PW)
+add_subdirectory (RCT)

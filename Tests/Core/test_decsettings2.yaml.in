@@ -1,0 +1,10 @@
+# Hammer ver. @PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@ process card
+
+Processes:
+    Include: [ [ D*Dpi, TauPiNu ], B+DTau+Nu, B+D*Tau+Nu ]
+    Forbid: [ [ B+DTau+Nu, TauEllNuNu ], B+DMu+Nu ]
+FormFactors:
+    NumeratorSchemes:
+        MixedScheme: { BD: HQET, BD*: CLN }
+        TestScheme: { BD: ISGW2, BD*: CLN }
+    Denominator: { BD: HQET, BD*: HQET }

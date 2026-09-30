@@ -1,0 +1,10 @@
+set (Hammer_FormFactors_TEST_LIBS FormFactors)
+
+new_test (FFBtoD0starBLR "${Hammer_FormFactors_TEST_LIBS}")
+new_test (FFBtoD0starBLRVar "${Hammer_FormFactors_TEST_LIBS}")
+new_test (FFBtoD1starBLR "${Hammer_FormFactors_TEST_LIBS}")
+new_test (FFBtoD1starBLRVar "${Hammer_FormFactors_TEST_LIBS}")
+new_test (FFBtoD1BLR "${Hammer_FormFactors_TEST_LIBS}")
+new_test (FFBtoD1BLRVar "${Hammer_FormFactors_TEST_LIBS}")
+new_test (FFBtoD2starBLR "${Hammer_FormFactors_TEST_LIBS}")
+new_test (FFBtoD2starBLRVar "${Hammer_FormFactors_TEST_LIBS}")

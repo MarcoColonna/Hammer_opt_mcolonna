@@ -1,0 +1,28 @@
+---
+Checks: >-
+  clang-diagnostic-*,
+  clang-analyzer-*,
+  bugprone-*,
+  performance-*,
+  modernize-*,
+  readability-*,
+  -bugprone-easily-swappable-parameters,
+  -modernize-use-trailing-return-type,
+  -readability-magic-numbers,
+  -readability-identifier-length,
+  -readability-uppercase-literal-suffix,
+  -bugprone-narrowing-conversions,
+  -modernize-macro-to-enum,
+  -modernize-use-scoped-lock,
+  -readability-math-missing-parentheses,
+  -bugprone-macro-parentheses,
+  -readability-function-cognitive-complexity
+
+WarningsAsErrors: ""
+HeaderFilterRegex: "include/Hammer/.*"
+ExcludeHeaderFilterRegex: ".*_generated\\.h"
+FormatStyle: file
+
+CheckOptions:
+  - key: readability-function-cognitive-complexity.Threshold
+    value: "50"
