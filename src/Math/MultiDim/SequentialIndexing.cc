@@ -47,10 +47,7 @@ namespace Hammer::MultiDimensional {
     }
 
     bool SequentialIndexing::checkValidIndices(const IndexList& indices) const {
-        if (indices.size() != _dimensions.size()){
-            return false;
-        }
-        return inner_product(indices.begin(), indices.end(), _dimensions.begin(), true, logical_and<>(), less<>());
+        return checkValidIndices(indices.begin(), indices.end());
     }
 
     bool SequentialIndexing::checkValidIndices(IndexList::const_iterator first, IndexList::const_iterator last) const {
@@ -61,9 +58,6 @@ namespace Hammer::MultiDimensional {
     }
 
     PositionType SequentialIndexing::indicesToPos(const IndexList& indices) const {
-        if (rank() == 1) {
-            return indices[0];
-        }
         return indicesToPos(indices.begin(), indices.end());
     }
 
