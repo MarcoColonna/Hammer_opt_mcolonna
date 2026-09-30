@@ -73,6 +73,12 @@ namespace Hammer::MultiDimensional {
             return {_last, *this};
         }
 
+    BruteForceIterator::BruteForceIterator(const IndexList& state,
+                const BruteForceIteratorRange& parent)
+
+            : _state(state), _parent(parent)
+        {}
+
 
     BruteForceIterator& BruteForceIterator::operator++() noexcept
         {
@@ -112,7 +118,11 @@ namespace Hammer::MultiDimensional {
 
     bool operator==(const BruteForceIterator& a, const BruteForceIterator& b) noexcept
     {
-        return a._state == b._state;
+        if (LIKELY(a._state.size() == b._state.size())) {
+            return std::equal(a._state.rbegin(), a._state.rend(), b._state.rbegin());
+        } else {
+            return false;
+        }
     }
 
     bool operator<(const BruteForceIterator& a, const BruteForceIterator& b) noexcept
