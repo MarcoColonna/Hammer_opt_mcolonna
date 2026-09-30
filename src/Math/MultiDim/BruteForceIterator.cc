@@ -9,120 +9,119 @@
 //**** Please note the MCnet academic guidelines; see GUIDELINES for details
 
 // -*- C++ -*-
-#include <cstdlib>
+
+#include <algorithm>
+#include <numeric>
+#include <utility>
+#include <stdexcept>
 
 #include "Hammer/Math/MultiDim/BruteForceIterator.hh"
 #include "Hammer/Exceptions.hh"
 
-using namespace std;
+// if compiler supports it, give hints on branch probabilities (for use in
+// BruteForceIterator::operator++())
+#if defined(__GNUC__)
+#define LIKELY(x) __builtin_expect((x), 1)
+#else
+#define LIKELY(x) (x)
+#endif
 
 namespace Hammer::MultiDimensional {
 
-    BruteForceIterator::BruteForceIterator() {
-        setInitialState();
+    BruteForceIterator::BruteForceIterator(const IndexList& state, const IndexList& first, const IndexList& last) : _state(state), _first(first), _last(last)
+    {}
+
+    IndexList BruteForceIterator::build_first(const IndexList& dimensions,
+                                              const IndexList& fixed)
+        {
+            // build first state in sequence
+            IndexList retVal;
+            retVal.reserve(dimensions.size());
+            if (fixed.empty()) {
+                // if no fixed dimensions, first in sequence is just all zero 
+                retVal.assign(dimensions.size(), 0);
+            } else {
+                // fixed dimensions
+                //
+                // start with some basic validation of input arguments
+                if (dimensions.size() != fixed.size())
+                    throw std::logic_error("arguments must have same size");
+                if (!std::inner_product(
+                            fixed.begin(), fixed.end(), dimensions.begin(), true,
+                            [](bool a, bool b) { return a && b; },
+                            [](const auto& a, const auto& b) { return a <= b; }))
+                    throw std::logic_error(
+                            "fixed elements must be <= dimensions elements");
+                // replace the non-fixed dimensions with zero, and keep the fixed
+                // dimensions as indicated by fixed
+                auto it = dimensions.begin();
+                std::replace_copy_if(
+                        fixed.begin(), fixed.end(), std::back_inserter(retVal),
+                        [&it](const auto& el) { return el == *it++; }, 0);
+            }
+            return retVal;
     }
 
     BruteForceIterator::BruteForceIterator(IndexList dimensions, IndexList fixed)
-        : _dimensions{std::move(dimensions)}, _fixedMask{std::move(fixed)} {
-        ASSERT(_fixedMask.empty() || equal(_dimensions.begin(), _dimensions.end(), _fixedMask.begin(), _fixedMask.end(),
-                                           [](IndexType a, IndexType b) -> bool { return a >= b; }));
-        setInitialState();
-    }
+                : _state{build_first(dimensions, fixed)}, _first{_state},
+                  _last{fixed.empty() ? std::move(dimensions) : std::move(fixed)}
+    {}
 
-    BruteForceIterator BruteForceIterator::begin() const {
-        BruteForceIterator b{*this};
-        b.setInitialState();
-        return b;
-    }
+    BruteForceIterator BruteForceIterator::begin() const
+        {
+            return {_first, _first, _last};
+        }
 
-    BruteForceIterator BruteForceIterator::end() const {
-        BruteForceIterator b{*this};
-        b._state = _dimensions;
-        return b;
-    }
+    BruteForceIterator BruteForceIterator::end() const
+        {
+            return {_last, _first, _last};
+        }
 
-    BruteForceIterator& BruteForceIterator::operator++() {
-        incrementEntry(_dimensions.size(), 1);
-        return *this;
-    }
 
-    BruteForceIterator BruteForceIterator::operator++(int n) {
-        BruteForceIterator b{*this};
-        incrementEntry(_dimensions.size(), n);
-        return b;
-    }
+    BruteForceIterator& BruteForceIterator::operator++() noexcept
+        {
+            auto i = _state.size();
+            if (LIKELY(i)) {
 
-    void BruteForceIterator::incrementEntry(size_t position, int n) {
-        if (position == _dimensions.size()) {
-            if (_dimensions == _state) {
-                throw RangeError("Invalid increment");
-            }
-            long newpos = static_cast<long>(position) - 1;
-            if (!_fixedMask.empty()) {
-                auto itd = _dimensions.rbegin();
-                auto itm = _fixedMask.rbegin();
-                while (newpos >= 0 && *itd != *itm) {
-                    ++itd;
-                    ++itm;
-                    --newpos;
-                }
-                if (newpos < 0) {
-                    _state = _dimensions;
-                    return;
+                while (true) {
+                    --i;
+                    ++_state[i];
+                    if (LIKELY(_state[i] < _last[i])) {
+                        break;
+                    } else {
+                        if (LIKELY(i)) {
+                            std::copy(_first.begin() + i, _first.end(),
+                                      _state.begin() + i);
+                        } else {
+                            std::copy(_last.begin(), _last.end(), _state.begin());
+                            break;
+                        }
+                    }
                 }
             }
-            incrementEntry(static_cast<size_t>(newpos), n);
-            return;
+            return *this;
         }
-        if (position == 0) {
-            if (n + _state[0] >= _dimensions[0]) {
-                _state = _dimensions;
-                return;
-            }
+
+    BruteForceIterator BruteForceIterator::operator++(int /* unused */)
+        {
+            const auto retVal{*this};
+            operator++();
+            return retVal;
+
         }
-        auto res = div(_state[position] + n, _dimensions[position]);
-        _state[position] = static_cast<IndexType>(res.rem);
-        if (res.quot != 0) {
-            long newpos = static_cast<long>(position) - 1;
-            if (!_fixedMask.empty()) {
-                while (newpos >= 0 &&
-                       _fixedMask[static_cast<size_t>(newpos)] != _dimensions[static_cast<size_t>(newpos)]) {
-                    --newpos;
-                }
-            }
-            if (newpos < 0) {
-                _state = _dimensions;
-                return;
-            }
-            incrementEntry(static_cast<size_t>(newpos), res.quot);
-        }
-    }
 
     IndexList BruteForceIterator::operator*() const {
         return _state;
     }
 
-    void BruteForceIterator::setInitialState() {
-        _state.clear();
-        if (_fixedMask.empty()) {
-            _state = IndexList(_dimensions.size(), 0);
-        } else {
-            _state.reserve(_dimensions.size());
-            auto itd = _dimensions.begin();
-            auto itm = _fixedMask.begin();
-            for (; itd != _dimensions.end(); ++itd, ++itm) {
-                if (*itd == *itm) {
-                    _state.push_back(0);
-                } else {
-                    _state.push_back(*itm);
-                }
-            }
-        }
+    bool operator==(const BruteForceIterator& a, const BruteForceIterator& b) noexcept
+    {
+        return a._state == b._state;
     }
 
-    bool BruteForceIterator::isSame(const BruteForceIterator& other) const {
-        return _state == other._state;
+    bool operator<(const BruteForceIterator& a, const BruteForceIterator& b) noexcept
+    {
+        return std::lexicographical_compare(a._state.begin(), a._state.end(), b._state.begin(), b._state.end());
     }
-
 
 } // namespace Hammer::MultiDimensional

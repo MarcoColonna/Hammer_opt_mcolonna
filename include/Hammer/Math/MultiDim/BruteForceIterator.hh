@@ -17,51 +17,50 @@
 namespace Hammer::MultiDimensional {
 
     class BruteForceIterator {
-    public:
+         private:
+             Hammer::IndexList _state;
+             Hammer::IndexList _first;
+             Hammer::IndexList _last;
 
-        BruteForceIterator();
-        explicit BruteForceIterator(IndexList dimensions, IndexList fixed = {});
+             BruteForceIterator(const Hammer::IndexList& state,
+		                const Hammer::IndexList& first,
+				const Hammer::IndexList& last);
+             static Hammer::IndexList build_first(
+		     const Hammer::IndexList& dimensions,
+		     const Hammer::IndexList& fixed);
 
-        BruteForceIterator(const BruteForceIterator&) = default;
-        BruteForceIterator(BruteForceIterator&&) = default;
-        BruteForceIterator& operator=(const BruteForceIterator&) = default;
-        BruteForceIterator& operator=(BruteForceIterator&&) = default;
+         public:
+             explicit BruteForceIterator(Hammer::IndexList dimensions,
+		                         Hammer::IndexList fixed = {});
 
-        ~BruteForceIterator() = default;
+             BruteForceIterator begin() const;
+             BruteForceIterator end() const;
 
-        [[nodiscard]] BruteForceIterator begin() const;
+             inline const Hammer::IndexList& operator*() const noexcept
+	     { return _state; }
 
-        [[nodiscard]] BruteForceIterator end() const;
+             BruteForceIterator& operator++() noexcept;
+             BruteForceIterator operator++(int /* unused */);
 
-        BruteForceIterator& operator++();
+             friend bool operator==(const BruteForceIterator& a,
+                                    const BruteForceIterator& b) noexcept;
+             friend inline bool operator!=(const BruteForceIterator& a,
+                                           const BruteForceIterator& b) noexcept
+             { return !(a == b); }
 
-        [[nodiscard]] BruteForceIterator operator++(int n);
-
-        [[nodiscard]] IndexList operator*() const;
-
-        [[nodiscard]] bool isSame(const BruteForceIterator& other) const;
-
-    private:
-
-        void incrementEntry(size_t position, int n);
-        void setInitialState();
-
-        IndexList _dimensions;
-        IndexList _fixedMask; ///< the strides for each tensor index (necessary to convert coordinates to position
-                              ///< in `_data`)
-        IndexList _state;
-    };
-
-
-    inline bool operator==(const BruteForceIterator& lhs, const BruteForceIterator& rhs) {
-        return lhs.isSame(rhs);
-    }
-
-    inline bool operator!=(const BruteForceIterator& lhs, const BruteForceIterator& rhs) {
-        return !(lhs == rhs);
-    }
-
-} // namespace Hammer::MultiDimensional
+             friend bool operator<(const BruteForceIterator& a,
+                                   const BruteForceIterator& b) noexcept;
+             friend inline bool operator>(const BruteForceIterator& a,
+                                          const BruteForceIterator& b) noexcept
+             { return b < a; }
+             friend inline bool operator<=(const BruteForceIterator& a,
+                                           const BruteForceIterator& b) noexcept
+             { return !(b < a); }
+             friend inline bool operator>=(const BruteForceIterator& a,
+                                           const BruteForceIterator& b) noexcept
+             { return !(a < b); }
+         };
+    } // namespace MultiDimensional
 
 namespace std {
 
