@@ -9,6 +9,8 @@
 //**** Please note the MCnet academic guidelines; see GUIDELINES for details
 
 // -*- C++ -*-
+
+#include <limits>
 #include <cstddef>
 #include <numeric>
 #include <iterator>
@@ -27,6 +29,17 @@
 using namespace std;
 
 namespace Hammer::MultiDimensional {
+
+    OuterContainer::Accessor::Accessor(std::size_t first, std::size_t last) : _first(first), _last(last)
+    {}
+        OuterContainer::ElementType OuterContainer::Accessor::operator()(const IndexList& list, IContainer* elem) const
+    {
+        return elem->element(
+                list.begin() + _first,
+                (std::numeric_limits<std::size_t>::max() == _last) ?
+                list.end() :
+                (list.begin() + _last));
+    }
 
     OuterContainer::OuterContainer(const OuterContainer& other) : IContainer{other} {
         if (!other._sharedData) {
@@ -62,37 +75,27 @@ namespace Hammer::MultiDimensional {
     }
 
     OuterContainer::OuterContainer(TensorData left, TensorData right)
-        : _indexing{{left->dims(), right->dims()}, {left->labels(), right->labels()}}, _sharedData{false} {
-        size_t pos = left->rank();
+        : _indexing{{left->dims(), right->dims()}, {left->labels(), right->labels()}}, _sharedData{false},
+              _accessors{{0, left->rank()}, { left->rank(), std::numeric_limits<std::size_t>::max()}}
+        {
         vector<pair<SharedTensorData, bool>> vec{{SharedTensorData{left.release()}, false},
                                                  {SharedTensorData{right.release()}, false}};
         ASSERT(vec[0].first.get() != nullptr);
         ASSERT(vec[1].first.get() != nullptr);
         _data.push_back(vec);
-        _accessors = {[pos](const IndexList& list, IContainer* elem) -> ElementType {
-                          return elem->element(list.begin(), list.begin() + static_cast<ptrdiff_t>(pos));
-                      },
-                      [pos](const IndexList& list, IContainer* elem) -> ElementType {
-                          return elem->element(list.begin() + static_cast<ptrdiff_t>(pos), list.end());
-                      }};
     }
 
     OuterContainer::OuterContainer(TensorData toBeSquared, bool conjugate)
         : _indexing{
               {toBeSquared->dims(), toBeSquared->dims()},
               {toBeSquared->labels(), conjugate ? flipListOfLabels(toBeSquared->labels()) : toBeSquared->labels()}},
-          _sharedData{false} {
-        size_t pos = toBeSquared->rank();
+              _sharedData{false},
+              _accessors{{0, toBeSquared->rank()}, { toBeSquared->rank(), std::numeric_limits<std::size_t>::max()}}
+        {
         auto elem = SharedTensorData{toBeSquared.release()};
         ASSERT(elem.get() != nullptr);
         vector<pair<SharedTensorData, bool>> vec{{elem, false}, {elem, conjugate}};
         _data.push_back(vec);
-        _accessors = {[pos](const IndexList& list, IContainer* item) -> ElementType {
-                          return item->element(list.begin(), list.begin() + static_cast<ptrdiff_t>(pos));
-                      },
-                      [pos](const IndexList& list, IContainer* item) -> ElementType {
-                          return item->element(list.begin() + static_cast<ptrdiff_t>(pos), list.end());
-                      }};
     }
 
     OuterContainer::OuterContainer(vector<TensorData>&& group) : _sharedData{false} {
@@ -102,14 +105,12 @@ namespace Hammer::MultiDimensional {
         dimensions.reserve(group.size());
         tensLabels.reserve(group.size());
         vec.reserve(group.size());
+        _accessors.reserve(group.size());
         size_t start = 0ul;
         size_t finish = 0ul;
         for (const auto& elem : group) {
             finish += elem->rank();
-            _accessors.emplace_back([start, finish](const IndexList& list, const IContainer* item) -> ElementType {
-                return item->element(list.begin() + static_cast<ptrdiff_t>(start),
-                                     list.begin() + static_cast<ptrdiff_t>(finish));
-            });
+            _accessors.emplace_back(start,finish);
             start = finish;
         }
         for (auto& elem : group) {
@@ -125,16 +126,11 @@ namespace Hammer::MultiDimensional {
         : _indexing{
               {toBeSquared->dims(), toBeSquared->dims()},
               {toBeSquared->labels(), conjugate ? flipListOfLabels(toBeSquared->labels()) : toBeSquared->labels()}},
-          _sharedData{true} {
+          _sharedData{true},
+              _accessors{{0, toBeSquared->rank()}, { toBeSquared->rank(), std::numeric_limits<std::size_t>::max()}}
+        {
         vector<pair<SharedTensorData, bool>> vec{{toBeSquared, false}, {toBeSquared, conjugate}};
         _data.push_back(vec);
-        size_t pos = toBeSquared->rank();
-        _accessors = {[pos](const IndexList& list, IContainer* item) -> ElementType {
-                          return item->element(list.begin(), list.begin() + static_cast<ptrdiff_t>(pos));
-                      },
-                      [pos](const IndexList& list, IContainer* item) -> ElementType {
-                          return item->element(list.begin() + static_cast<ptrdiff_t>(pos), list.end());
-                      }};
     }
 
     OuterContainer::OuterContainer(OuterContainer::EntryType&& data) : _sharedData{true} {
@@ -152,12 +148,10 @@ namespace Hammer::MultiDimensional {
         }
         size_t start = 0ul;
         size_t finish = 0ul;
+        _accessors.reserve(data.size());
         for (auto& elem : data) {
             finish += elem.first->rank();
-            _accessors.emplace_back([start, finish](const IndexList& list, const IContainer* item) -> ElementType {
-                return item->element(list.begin() + static_cast<ptrdiff_t>(start),
-                                     list.begin() + static_cast<ptrdiff_t>(finish));
-            });
+            _accessors.emplace_back(start, finish);
             start = finish;
         }
         _data.push_back(std::move(data));
@@ -210,17 +204,14 @@ namespace Hammer::MultiDimensional {
                 vector<IndexList> tmpdims;
                 tmplabels.reserve(entry->size());
                 tmpdims.reserve(entry->size());
+                _accessors.reserve(entry->size());
                 size_t start = 0ul;
                 size_t finish = 0ul;
                 for (auto& it : *entry) {
                     tmplabels.push_back(((it.second) ? flipListOfLabels((it.first)->labels()) : (it.first)->labels()));
                     tmpdims.push_back((it.first)->dims());
                     finish += it.first->rank();
-                    _accessors.emplace_back(
-                        [start, finish](const IndexList& list, const IContainer* item) -> ElementType {
-                            return item->element(list.begin() + static_cast<ptrdiff_t>(start),
-                                                 list.begin() + static_cast<ptrdiff_t>(finish));
-                        });
+                    _accessors.emplace_back(start, finish);
                     start = finish;
                 }
                 _indexing = BlockIndexing{tmpdims, tmplabels};

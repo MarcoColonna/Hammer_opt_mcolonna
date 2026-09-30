@@ -43,10 +43,7 @@ namespace Hammer::MultiDimensional {
             ptrdiff_t finish = 0ul;
             for (auto& elem : tmp->_data[0]) {
                 finish += static_cast<ptrdiff_t>(elem.first->rank());
-                tmp->_accessors.emplace_back(
-                    [start, finish](const IndexList& listIdx, IContainer* item) -> OuterContainer::ElementType {
-                        return item->element(listIdx.begin() + start, listIdx.begin() + finish);
-                    });
+                tmp->_accessors.emplace_back(start,finish);
                 start = finish;
             }
             vector<IndexList> tmpdims;

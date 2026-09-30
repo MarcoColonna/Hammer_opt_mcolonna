@@ -160,7 +160,16 @@ namespace Hammer {
             mutable DataType _data;
             BlockIndexing _indexing;
             bool _sharedData;
-            std::vector<std::function<ElementType(const IndexList&, IContainer*)>> _accessors;
+            class Accessor {
+                private:
+                std::size_t _first, _last;
+                public:
+                Accessor(std::size_t first, std::size_t last);
+                ElementType operator()(const IndexList& list, IContainer* elem) const;
+
+            };
+
+            std::vector<Accessor> _accessors;
         };
 
         TensorData makeOuterSquare(const TensorData& base);
