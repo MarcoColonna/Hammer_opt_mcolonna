@@ -44,7 +44,7 @@ namespace Hammer::MultiDimensional {
             auto newdimlabs = getNewIndexLabels(a);
             auto strides = a.getIndexing().processShifts(_indices, IndexPairMember::Both);
             IndexList inners(a.dims().size() - newdimlabs.first.size());
-            vector<bool> innerAdds(inners.size(), false);
+            FlagList innerAdds(inners.size(), false);
             if (!newdimlabs.first.empty()) {
                 auto newsparse = makeEmptySparse(newdimlabs.first, newdimlabs.second);
                 auto* result = static_cast<STensor*>(newsparse.release());

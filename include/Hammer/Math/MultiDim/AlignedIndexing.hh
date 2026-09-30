@@ -118,8 +118,8 @@ namespace Hammer {
             /// contracted indices reordered according to the shifts)
             [[nodiscard]] PositionType splitPosition(PositionType alignedPosition,
                                                      const IndexList& outerShiftsInnerPositions,
-                                                     const std::vector<bool>& isOuter, IndexList& innerList,
-                                                     std::vector<bool>& innerAdded, bool shouldCompare = false) const;
+                                                     const FlagList& isOuter, IndexList& innerList,
+                                                     FlagList& innerAdded, bool shouldCompare = false) const;
 
             /// @brief build the input lists necessary for calling splitPosition based on which indices are being
             /// contracted
@@ -130,7 +130,7 @@ namespace Hammer {
             /// Trace
             /// @return the lists to be fed to splitPosition  (outerShiftsInnerPositions and isOuter) and the maximum
             /// aligned index of the uncontracted indices
-            [[nodiscard]] std::tuple<IndexList, std::vector<bool>, PositionType>
+            [[nodiscard]] std::tuple<IndexList, FlagList, PositionType>
             processShifts(const IndexPairList& pairs, IndexPairMember which) const;
 
             /// @brief get the maximum allowed value for the absolute position

@@ -209,16 +209,16 @@ namespace Hammer::MultiDimensional {
         }
     }
 
-    vector<tuple<IndexList, vector<bool>, PositionType>> BlockIndexing::processShifts(const DotGroupList& chunks,
+    vector<tuple<IndexList, FlagList, PositionType>> BlockIndexing::processShifts(const DotGroupList& chunks,
                                                                                       IndexPairMember which) const {
-        vector<tuple<IndexList, vector<bool>, PositionType>> result;
+        vector<tuple<IndexList, FlagList, PositionType>> result;
         result.reserve(chunks.size() - 1);
         for (IndexType i = 1; i < static_cast<IndexType>(chunks.size()); ++i) { // first entry is the unassociated;
             auto tmp = _globalIndexing.processShifts(get<2>(chunks[i]), which);
             // now process the others: need to eliminate the paddings for the outer indices belonging to
             // non-contracted subtensors
             IndexList& shifts = get<0>(tmp);
-            vector<bool>& outerchecks = get<1>(tmp);
+            FlagList& outerchecks = get<1>(tmp);
             auto maxPad = static_cast<IndexType>(minPadding(
                 get<2>(tmp))); // this is the sum of the pads of all the uncontracted indices (both spectator and non)
             IndexType currentPadSubtract = 0ul;
@@ -255,8 +255,8 @@ namespace Hammer::MultiDimensional {
     }
 
     PositionType BlockIndexing::splitPosition(const OuterElemIterator& currentPosition, const DotGroupType& chunk,
-                                              const IndexList& outerShiftsInnerPositions, const vector<bool>& isOuter,
-                                              IndexList& innerList, vector<bool>& innerAdded,
+                                              const IndexList& outerShiftsInnerPositions, const FlagList& isOuter,
+                                              IndexList& innerList, FlagList& innerAdded,
                                               bool shouldCompare) const {
         const IndexList& chunkIndices = shouldCompare ? get<1>(chunk) : get<0>(chunk);
         PositionType fullPos = buildFullPosition(currentPosition, chunkIndices);

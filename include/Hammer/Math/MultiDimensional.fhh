@@ -43,6 +43,9 @@ namespace Hammer {
     using UniqueLabelsList = std::set<IndexLabel>;
     using LabelPairsSet = std::set<LabelPair>;
 
+    using FlagList = std::vector<bool>;
+
+
     namespace MultiDimensional {
 
         class IContainer;

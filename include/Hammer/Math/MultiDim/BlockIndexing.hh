@@ -182,13 +182,13 @@ namespace Hammer::MultiDimensional {
 
         [[nodiscard]] size_t maxSubRank() const;
 
-        [[nodiscard]] std::vector<std::tuple<IndexList, std::vector<bool>, PositionType>>
+        [[nodiscard]] std::vector<std::tuple<IndexList, FlagList, PositionType>>
         processShifts(const DotGroupList& chunks, IndexPairMember which) const;
 
         [[nodiscard]] PositionType splitPosition(const OuterElemIterator& currentPosition, const DotGroupType& chunk,
                                                  const IndexList& outerShiftsInnerPositions,
-                                                 const std::vector<bool>& isOuter, IndexList& innerList,
-                                                 std::vector<bool>& innerAdded, bool shouldCompare = false) const;
+                                                 const FlagList& isOuter, IndexList& innerList,
+                                                 FlagList& innerAdded, bool shouldCompare = false) const;
 
         [[nodiscard]] PositionType buildFullPosition(const OuterElemIterator& current,
                                                      const IndexList& chunkIndices) const;

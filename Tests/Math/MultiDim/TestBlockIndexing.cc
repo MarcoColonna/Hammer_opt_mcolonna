@@ -608,7 +608,7 @@ namespace Hammer::MultiDimensional {
         OuterElemIterator itR0{entryR0};
         auto itRe0 = itR0.end();
         IndexList inners(1);
-        vector<bool> innerAdds(1);
+        FlagList innerAdds(1);
         auto tmpLeft = biL.splitPosition(itL0, chks[1], get<0>(infoL[0]), get<1>(infoL[0]), inners, innerAdds);
         EXPECT_EQ(inners[0], 0);
         EXPECT_TRUE(innerAdds[0]);
@@ -675,7 +675,7 @@ namespace Hammer::MultiDimensional {
         OuterElemIterator itR1{entryR1};
         auto itRe1 = itR1.end();
         IndexList inners(1);
-        vector<bool> innerAdds(1);
+        FlagList innerAdds(1);
         auto tmpLeft = biL.splitPosition(itL1, chks[2], get<0>(infoL[1]), get<1>(infoL[1]), inners, innerAdds);
         EXPECT_EQ(inners[0], 0);
         EXPECT_TRUE(innerAdds[0]);

@@ -57,7 +57,7 @@ namespace Hammer {
             explicit OuterContainer(TensorData left, TensorData right);
             explicit OuterContainer(TensorData toBeSquared, bool conjugate = true);
             explicit OuterContainer(std::vector<TensorData>&& group);
-            // OuterContainer(std::vector<SharedTensorData>&& group, std::vector<bool>&& isConjugate = {});
+            // OuterContainer(std::vector<SharedTensorData>&& group, FlagList&& isConjugate = {});
             explicit OuterContainer(EntryType&& data);
             explicit OuterContainer(SharedTensorData toBeSquared, bool conjugate = true);
             explicit OuterContainer(const Serial::FBTensorList* input);

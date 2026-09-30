@@ -105,7 +105,7 @@ namespace Hammer::MultiDimensional {
             auto leftinfo = a.getIndexing().processShifts(_indices, IndexPairMember::Left);
             auto rightinfo = b.getIndexing().processShifts(_indices, IndexPairMember::Right);
             IndexList inners((a.dims().size() + b.dims().size() - newdimlabs.first.size()) / 2);
-            vector<bool> innerAdds(inners.size(), false);
+            FlagList innerAdds(inners.size(), false);
             if (newdimlabs.first.empty()) {
                 auto newscal = makeEmptyScalar();
                 for (const auto& elemL : a) {
@@ -146,7 +146,7 @@ namespace Hammer::MultiDimensional {
         Base* Dot::operator()(STensor& a, const VTensor& b) {
             auto newdimlabs = getNewIndexLabels(a, b);
             IndexList inners((a.dims().size() + b.dims().size() - newdimlabs.first.size()) / 2);
-            vector<bool> innerAdds(inners.size(), false);
+            FlagList innerAdds(inners.size(), false);
             auto leftinfo = a.getIndexing().processShifts(_indices, IndexPairMember::Left);
             if (newdimlabs.first.empty()) {
                 auto newscal = makeEmptyScalar();
@@ -399,7 +399,7 @@ namespace Hammer::MultiDimensional {
                 transform(get<0>(chunks[1]).begin(), get<0>(chunks[1]).end(), back_inserter(leftTensors),
                           [&](IndexType idx) -> const pair<SharedTensorData, bool>& { return elemA[idx]; });
                 IndexList inners(get<2>(chunks[1]).size());
-                vector<bool> innerAdds(inners.size(), false);
+                FlagList innerAdds(inners.size(), false);
                 auto newdimlabs = getNewIndexLabels(a.getIndexing(), b.getIndexing(), chunks[1]);
                 OuterElemIterator itA{leftTensors};
                 OuterElemIterator itAEnd = itA.end();
@@ -654,7 +654,7 @@ namespace Hammer::MultiDimensional {
                     transform(get<1>(chunks[1]).begin(), get<1>(chunks[1]).end(), back_inserter(rightTensors),
                               [&](IndexType idx) -> const pair<SharedTensorData, bool>& { return elemB[idx]; });
                     IndexList inners(get<2>(chunks[1]).size());
-                    vector<bool> innerAdds(inners.size(), false);
+                    FlagList innerAdds(inners.size(), false);
                     auto newdimlabs = getNewIndexLabels(a.getIndexing(), b.getIndexing(), chunks[1]);
                     size_t totalRankB =
                         accumulate(rightTensors.begin(), rightTensors.end(), 0ul,
@@ -856,7 +856,7 @@ namespace Hammer::MultiDimensional {
             auto stridesA = a.getIndexing().getInnerOuterStrides(contractionsForStrides, innerIndexing.strides());
 
             IndexList inners(_indices.size());
-            vector<bool> innerAdds(_indices.size(), false);
+            FlagList innerAdds(_indices.size(), false);
 
             for (const auto& elemB : b) {
                 Base::ElementType currentWeight = 1.;
@@ -1320,7 +1320,7 @@ namespace Hammer::MultiDimensional {
             const IndexList& srcD = a.first->dims();
             const LabelsList srcL = a.second ? flipListOfLabels(a.first->labels()) : a.first->labels();
             const size_t n = srcD.size();
-            vector<bool> skip(n, false);
+            FlagList skip(n, false);
             for (const auto& elem : contracted) {
                 skip[elem.first] = true;
             }
@@ -1421,7 +1421,7 @@ namespace Hammer::MultiDimensional {
             bool singleEdge = contractions.size() == 1;
             if (as != nullptr) {
                 IndexList inners(contractions.size());
-                vector<bool> innerAdds(inners.size(), false);
+                FlagList innerAdds(inners.size(), false);
                 auto leftinfo = as->getIndexing().processShifts(contractions, IndexPairMember::Left);
                 if (newdimlabs.first.empty()) {
                     auto newscal = makeEmptyScalar();

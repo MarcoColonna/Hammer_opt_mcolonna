@@ -259,9 +259,9 @@ namespace Hammer::MultiDimensional {
         IndexList innerA = {0};
         IndexList innerB = {0, 0};
         IndexList innerC = {0, 0, 0, 0};
-        vector<bool> innerAddA = {false};
-        vector<bool> innerAddB = {false, false};
-        vector<bool> innerAddC = {false, false, false, false};
+        FlagList innerAddA = {false};
+        FlagList innerAddB = {false, false};
+        FlagList innerAddC = {false, false, false, false};
         for (IndexType i1 = 0; i1 < 2; ++i1) {
             for (IndexType i2 = 0; i2 < 7; ++i2) {
                 for (IndexType i3 = 0; i3 < 3; ++i3) {

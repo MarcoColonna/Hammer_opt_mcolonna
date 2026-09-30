@@ -112,8 +112,8 @@ namespace Hammer::MultiDimensional {
     }
 
     PositionType AlignedIndexing::splitPosition(PositionType alignedPosition,
-                                                const IndexList& outerShiftsInnerPositions, const vector<bool>& isOuter,
-                                                IndexList& innerList, vector<bool>& innerAdded,
+                                                const IndexList& outerShiftsInnerPositions, const FlagList& isOuter,
+                                                IndexList& innerList, FlagList& innerAdded,
                                                 bool shouldCompare) const {
         fill(innerAdded.begin(), innerAdded.end(), false);
         PositionType newPos = 0ul;
@@ -138,7 +138,7 @@ namespace Hammer::MultiDimensional {
         return newPos;
     }
 
-    std::tuple<IndexList, std::vector<bool>, PositionType> AlignedIndexing::processShifts(const IndexPairList& pairs,
+    std::tuple<IndexList, std::FlagList, PositionType> AlignedIndexing::processShifts(const IndexPairList& pairs,
                                                                                           IndexPairMember which) const {
         map<IndexType, IndexType> inners;
         for (IndexType i = 0; i < static_cast<IndexType>(pairs.size()); ++i) {
@@ -161,7 +161,7 @@ namespace Hammer::MultiDimensional {
             newDims.push_back((inners.find(i) != inners.end()) ? '\0' : _dimensions[i]);
         }
         IndexList retIndices;
-        vector<bool> retBools(_dimensions.size(), true);
+        FlagList retBools(_dimensions.size(), true);
         auto maxIdx = calcPadding(newDims, retIndices);
         for (auto elem : inners) {
             retIndices[elem.first] = elem.second;
