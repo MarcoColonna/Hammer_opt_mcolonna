@@ -15,35 +15,40 @@
 #include <cstdint>
 #include <set>
 #include <utility>
-#include <vector>
 #include <memory>
+
+#include "instrumented_vector.h"
+
 
 namespace Hammer {
 
+    template <class T, class ALLOC = std::allocator<T>>
+    using multidim_vector = instrumented_vector<T, ALLOC>;
+
     using IndexType = uint16_t; // Lots of space for integrator dimensions
     using IndexPair = std::pair<IndexType, IndexType>;
-    using IndexList = std::vector<IndexType>;
+    using IndexList = multidim_vector<IndexType>;
     using UniqueIndexList = std::set<IndexType>;
-    using IndexPairList = std::vector<IndexPair>;
-    // using IndexBoolPairList = std::vector<std::pair<IndexType, bool>>;
+    using IndexPairList = multidim_vector<IndexPair>;
+    // using IndexBoolPairList = multidim_vector<std::pair<IndexType, bool>>;
 
     using LabelSignature = std::pair<size_t, bool>; // Index and sign of first element
 
     using PositionType = size_t;
     using PositionPair = std::pair<PositionType, PositionType>;
-    using PositionList = std::vector<PositionType>;
-    using PositionPairList = std::vector<PositionPair>;
+    using PositionList = multidim_vector<PositionType>;
+    using PositionPairList = multidim_vector<PositionPair>;
 
     using PosIndexPair = std::pair<PositionType, IndexType>;
-    using PosIndexPairList = std::vector<PosIndexPair>;
+    using PosIndexPairList = multidim_vector<PosIndexPair>;
 
     enum IndexLabel : int64_t;
     using LabelPair = std::pair<IndexLabel, IndexLabel>;
-    using LabelsList = std::vector<IndexLabel>;
+    using LabelsList = multidim_vector<IndexLabel>;
     using UniqueLabelsList = std::set<IndexLabel>;
     using LabelPairsSet = std::set<LabelPair>;
 
-    using FlagList = std::vector<bool>;
+    using FlagList = multidim_vector<bool>;
 
 
     namespace MultiDimensional {

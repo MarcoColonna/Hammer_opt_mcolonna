@@ -1165,13 +1165,13 @@ namespace Hammer::MultiDimensional {
         }
 
         template <size_t N, typename U, typename... Types>
-        enable_if_t<is_convertible_v<vector<U>, tuple_element_t<N, tuple<Types...>>>, bool>
+        enable_if_t<is_convertible_v<multidim_vector<U>, tuple_element_t<N, tuple<Types...>>>, bool>
         matchPartitions(const tuple<Types...>& data, U value) {
             return find(get<N>(data).begin(), get<N>(data).end(), value) != get<N>(data).end();
         }
 
         template <size_t N, typename U, typename... Types>
-        enable_if_t<is_convertible_v<vector<U>, tuple_element_t<N, tuple<Types...>>>, void>
+        enable_if_t<is_convertible_v<multidim_vector<U>, tuple_element_t<N, tuple<Types...>>>, void>
         addPartitionEntry(tuple<Types...>& data, U value) {
             if (find(get<N>(data).begin(), get<N>(data).end(), value) == get<N>(data).end()) {
                 get<N>(data).push_back(value);
