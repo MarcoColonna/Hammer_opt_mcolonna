@@ -71,7 +71,7 @@ namespace Hammer::MultiDimensional {
         Base* Convert::toVector(OTensor& a) {
             auto tmp = makeEmptyVector(a.dims(), a.labels());
             auto* res = static_cast<VTensor*>(tmp.get());
-            BruteForceIterator bf{a.dims()};
+            const BruteForceIteratorRange bf{a.dims()};
             for (const auto& el: bf) {
                 auto val = a.value(el);
                 if (!isZero(val)) {

@@ -16,51 +16,58 @@
 
 namespace Hammer::MultiDimensional {
 
+    class BruteForceIterator;
+
+    class BruteForceIteratorRange {
+	private:
+	    Hammer::IndexList _first;
+	    Hammer::IndexList _last;
+
+        static Hammer::IndexList build_first(
+		const Hammer::IndexList& dimensions,
+	    const Hammer::IndexList& fixed);
+
+        friend class BruteForceIterator;
+	public:
+	    explicit BruteForceIteratorRange(Hammer::IndexList dimensions, Hammer::IndexList fixed = {})
+
+        BruteForceIterator begin() const;
+	    BruteForceIterator end() const;
+	};
+
     class BruteForceIterator {
-         private:
-             Hammer::IndexList _state;
-             Hammer::IndexList _first;
-             Hammer::IndexList _last;
+	private:
+	    Hammer::IndexList _state;
+	    const BruteForceIteratorRange& _parent;
+	public:
+	    BruteForceIterator(const Hammer::IndexList& state, const BruteForceIteratorRange& parent);
 
-             BruteForceIterator(const Hammer::IndexList& state,
-		                const Hammer::IndexList& first,
-				const Hammer::IndexList& last);
-             static Hammer::IndexList build_first(
-		     const Hammer::IndexList& dimensions,
-		     const Hammer::IndexList& fixed);
+        inline const Hammer::IndexList& operator*() const noexcept
+	    { return _state; }
 
-         public:
-             explicit BruteForceIterator(Hammer::IndexList dimensions,
-		                         Hammer::IndexList fixed = {});
+        BruteForceIterator& operator++() noexcept;
+	    BruteForceIterator operator++(int /* unused */);
 
-             BruteForceIterator begin() const;
-             BruteForceIterator end() const;
+	    friend bool operator==(const BruteForceIterator& a,
+		    const BruteForceIterator& b) noexcept;
+	    friend inline bool operator!=(const BruteForceIterator& a,
+		    const BruteForceIterator& b) noexcept
+	    { return !(a == b); }
 
-             inline const Hammer::IndexList& operator*() const noexcept
-	     { return _state; }
+	    friend bool operator<(const BruteForceIterator& a,
+		    const BruteForceIterator& b) noexcept;
+	    friend inline bool operator>(const BruteForceIterator& a,
+		    const BruteForceIterator& b) noexcept
+	    { return b < a; }
+	    friend inline bool operator<=(const BruteForceIterator& a,
+		    const BruteForceIterator& b) noexcept
+	    { return !(b < a); }
+	    friend inline bool operator>=(const BruteForceIterator& a,
+		    const BruteForceIterator& b) noexcept
+	    { return !(a < b); }
 
-             BruteForceIterator& operator++() noexcept;
-             BruteForceIterator operator++(int /* unused */);
-
-             friend bool operator==(const BruteForceIterator& a,
-                                    const BruteForceIterator& b) noexcept;
-             friend inline bool operator!=(const BruteForceIterator& a,
-                                           const BruteForceIterator& b) noexcept
-             { return !(a == b); }
-
-             friend bool operator<(const BruteForceIterator& a,
-                                   const BruteForceIterator& b) noexcept;
-             friend inline bool operator>(const BruteForceIterator& a,
-                                          const BruteForceIterator& b) noexcept
-             { return b < a; }
-             friend inline bool operator<=(const BruteForceIterator& a,
-                                           const BruteForceIterator& b) noexcept
-             { return !(b < a); }
-             friend inline bool operator>=(const BruteForceIterator& a,
-                                           const BruteForceIterator& b) noexcept
-             { return !(a < b); }
-         };
-    } // namespace MultiDimensional
+	};
+} // namespace MultiDimensional
 
 namespace std {
 

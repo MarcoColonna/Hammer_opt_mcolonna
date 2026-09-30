@@ -28,11 +28,7 @@
 
 namespace Hammer::MultiDimensional {
 
-    BruteForceIterator::BruteForceIterator(const IndexList& state, const IndexList& first, const IndexList& last) : _state(state), _first(first), _last(last)
-    {}
-
-    IndexList BruteForceIterator::build_first(const IndexList& dimensions,
-                                              const IndexList& fixed)
+    IndexList BruteForceIteratorRange::build_first(const IndexList& dimensions, const IndexList& fixed)
         {
             // build first state in sequence
             IndexList retVal;
@@ -62,19 +58,19 @@ namespace Hammer::MultiDimensional {
             return retVal;
     }
 
-    BruteForceIterator::BruteForceIterator(IndexList dimensions, IndexList fixed)
-                : _state{build_first(dimensions, fixed)}, _first{_state},
+    BruteForceIteratorRange::BruteForceIteratorRange(IndexList dimensions, IndexList fixed)
+                : _first{build_first(dimensions, fixed)},
                   _last{fixed.empty() ? std::move(dimensions) : std::move(fixed)}
     {}
 
-    BruteForceIterator BruteForceIterator::begin() const
+    BruteForceIterator BruteForceIteratorRange::begin() const
         {
-            return {_first, _first, _last};
+            return {_first, *this};
         }
 
-    BruteForceIterator BruteForceIterator::end() const
+    BruteForceIterator BruteForceIteratorRange::end() const
         {
-            return {_last, _first, _last};
+            return {_last, *this};
         }
 
 
@@ -86,14 +82,14 @@ namespace Hammer::MultiDimensional {
                 while (true) {
                     --i;
                     ++_state[i];
-                    if (LIKELY(_state[i] < _last[i])) {
+                    if (LIKELY(_state[i] < _parent._last[i])) {
                         break;
                     } else {
                         if (LIKELY(i)) {
-                            std::copy(_first.begin() + i, _first.end(),
+                            std::copy(_parent._first.begin() + i, _parent._first.end(),
                                       _state.begin() + i);
                         } else {
-                            std::copy(_last.begin(), _last.end(), _state.begin());
+                            std::copy(_parent._last.begin(), _parent._last.end(), _state.begin());
                             break;
                         }
                     }

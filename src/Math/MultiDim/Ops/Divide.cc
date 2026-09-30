@@ -95,7 +95,7 @@ namespace Hammer::MultiDimensional {
         }
 
         IContainer* Divide::operator()(Base& a, const Base& b) {
-            BruteForceIterator bf{a.dims()};
+            const BruteForceIteratorRange bf{a.dims()};
             for (const auto& elem : bf) {
                 a.element(elem) /= b.element(elem);
             }
