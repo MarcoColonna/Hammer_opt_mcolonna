@@ -201,8 +201,8 @@ namespace Hammer::MultiDimensional {
         void calc();
 
         std::vector<LabeledIndexing<AlignedIndexing>> _subIndexing;
-        std::IndexList _splitIndices;
-        std::vector<PositionType> _splitPads;
+        IndexList _splitIndices;
+        PositionList _splitPads;
         LabeledIndexing<AlignedIndexing> _globalIndexing;
     };
 
