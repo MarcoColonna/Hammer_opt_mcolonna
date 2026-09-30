@@ -102,7 +102,7 @@ namespace Hammer {
         //     /// @brief fills specific tensor elements at once
         //     /// @param[in] values a list of (indices, value) for the elements to set
         //     /// @return a reference to itself
-        //     void fillTensorElements(const std::vector<std::pair<std::vector<size_t>, std::complex<double>>>& values);
+        //     void fillTensorElements(const std::vector<std::pair<std::PositionList, std::complex<double>>>& values);
 
         bool isEqualTo(const Tensor& other) const;
 

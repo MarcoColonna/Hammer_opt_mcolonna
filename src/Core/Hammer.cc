@@ -747,7 +747,7 @@ namespace Hammer {
         return {};
     }
 
-    double Hammer::getWeight(const string& scheme, const vector<size_t>& processes,
+    double Hammer::getWeight(const string& scheme, const std::vector<HashId>& processes,
                              const string& specialization) const {
         auto tempProcesses = processes;
         if (tempProcesses.empty()) {

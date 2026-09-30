@@ -74,8 +74,8 @@ namespace Hammer {
         histos.addHistogramDefinition("Obs13", {10, 5}, false);
         histos.addHistogramDefinition("Obs13", IndexList{10});
 
-        vector<size_t> bins1 = {1, 15, 4};
-        vector<size_t> bins2 = {2, 4};
+        PositionList bins1 = {1, 15, 4};
+        PositionList bins2 = {2, 4};
 
         auto bins1Test = histos.getBinIndices("Obs123", {0.7, 14.1, 3.4});
         auto bins2Test = histos.getBinIndices("Obs13", {2.8, 4.4});

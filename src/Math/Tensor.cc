@@ -264,7 +264,7 @@ namespace Hammer {
     }
 
     // Tensor&
-    // Tensor::fillTensorElements(const vector<pair<vector<size_t>, complex<double>>>& values) {
+    // Tensor::fillTensorElements(const vector<pair<PositionList, complex<double>>>& values) {
     //     for (auto& elem : values) {
     //         element(elem.first) = elem.second;
     //     }

@@ -426,7 +426,7 @@ namespace Hammer {
         /// @param[in] processes
         /// @param[in] specialization
         /// @return
-        [[nodiscard]] double getWeight(const std::string& scheme, const std::vector<size_t>& processes = {},
+        [[nodiscard]] double getWeight(const std::string& scheme, const std::PositionList& processes = {},
                                        const std::string& specialization = Spec::none()) const;
 
         /// @brief

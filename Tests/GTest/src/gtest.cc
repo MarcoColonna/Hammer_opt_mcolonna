@@ -1263,8 +1263,8 @@ std::string Message::GetString() const {
 namespace internal {
 
 namespace edit_distance {
-std::vector<EditType> CalculateOptimalEdits(const std::vector<size_t>& left,
-                                            const std::vector<size_t>& right) {
+std::vector<EditType> CalculateOptimalEdits(const std::PositionList& left,
+                                            const std::PositionList& right) {
   std::vector<std::vector<double> > costs(
       left.size() + 1, std::vector<double>(right.size() + 1));
   std::vector<std::vector<EditType> > best_move(
@@ -1342,7 +1342,7 @@ class InternalStrings {
 std::vector<EditType> CalculateOptimalEdits(
     const std::vector<std::string>& left,
     const std::vector<std::string>& right) {
-  std::vector<size_t> left_ids, right_ids;
+  std::PositionList left_ids, right_ids;
   {
     InternalStrings intern_table;
     for (size_t i = 0; i < left.size(); ++i) {

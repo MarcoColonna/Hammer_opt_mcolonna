@@ -3478,8 +3478,8 @@ std::string EditsToString(const std::vector<EditType>& edits) {
   return out;
 }
 
-std::vector<size_t> CharsToIndices(const std::string& str) {
-  std::vector<size_t> out;
+std::PositionList CharsToIndices(const std::string& str) {
+  std::PositionList out;
   for (size_t i = 0; i < str.size(); ++i) {
     out.push_back(static_cast<size_t>(str[i]));
   }

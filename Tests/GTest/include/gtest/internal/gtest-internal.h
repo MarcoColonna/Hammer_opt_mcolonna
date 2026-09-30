@@ -171,7 +171,7 @@ namespace edit_distance {
 // See http://en.wikipedia.org/wiki/Wagner-Fischer_algorithm
 enum EditType { kMatch, kAdd, kRemove, kReplace };
 GTEST_API_ std::vector<EditType> CalculateOptimalEdits(
-    const std::vector<size_t>& left, const std::vector<size_t>& right);
+    const std::PositionList& left, const std::PositionList& right);
 
 // Same as above, but the input is represented as strings.
 GTEST_API_ std::vector<EditType> CalculateOptimalEdits(

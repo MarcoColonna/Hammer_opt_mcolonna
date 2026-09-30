@@ -598,7 +598,7 @@ namespace Hammer::MultiDimensional {
                 shouldboomerang &= b.begin()->at(elem).first->rank() == 2;
             }
             shouldboomerang &= get<1>(chunks[1]).size() == 2 && get<2>(chunks[1]).size() == 2;
-            vector<size_t> sortedOrder(_indices.size());
+            PositionList sortedOrder(_indices.size());
             IndexPairList contractions{};
             if (should1ns) {
                 iota(sortedOrder.begin(), sortedOrder.end(), 0);
@@ -829,7 +829,7 @@ namespace Hammer::MultiDimensional {
             shouldboomerang &= get<1>(chunks[1]).size() == 2 && get<2>(chunks[1]).size() == 2;
 
             // build contractions for star topology
-            vector<size_t> sortedOrder(_indices.size());
+            PositionList sortedOrder(_indices.size());
             IndexPairList contractions{};
             if (should1ns) {
                 iota(sortedOrder.begin(), sortedOrder.end(), 0);
