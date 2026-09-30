@@ -39,7 +39,7 @@ namespace Hammer::MultiDimensional {
             const auto* serialdims = input->dims();
             const auto* seriallabels = input->labels();
             if (serialdims != nullptr && seriallabels != nullptr) {
-                vector<IndexLabel> tmplabels;
+                LabelsList tmplabels;
                 tmplabels.reserve(seriallabels->size());
                 IndexList tmpdims;
                 tmpdims.reserve(serialdims->size());
