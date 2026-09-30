@@ -17,13 +17,19 @@
 #include <utility>
 #include <memory>
 
-#include "instrumented_vector.h"
+#include <functional>
+#include <type_traits>
+
+#include <boost/container/small_vector.hpp>
 
 
 namespace Hammer {
 
+    constexpr static std::size_t min_small_vector_size = 8;
+    constexpr static std::size_t cache_line_size = 64;
+
     template <class T, class ALLOC = std::allocator<T>>
-    using multidim_vector = instrumented_vector<T, ALLOC>;
+    using multidim_vector = boost::container::small_vector<T, (((min_small_vector_size * sizeof(T) + 3 * sizeof(void*) + cache_line_size - 1) / cache_line_size) * cache_line_size -3 * sizeof(void*)) / sizeof(T), ALLOC>;
 
     using IndexType = uint16_t; // Lots of space for integrator dimensions
     using IndexPair = std::pair<IndexType, IndexType>;
@@ -59,5 +65,33 @@ namespace Hammer {
     } // namespace MultiDimensional
 
 } // namespace Hammer
+
+
+namespace std {
+    // specialize std::hash for Hammer::IndexLabel
+    template <>
+    class hash<Hammer::IndexLabel> {
+        using underlying_type = typename std::underlying_type<Hammer::IndexLabel>::type;
+        using result_type = std::size_t;
+        using argument_type = Hammer::IndexLabel;
+        result_type operator()(argument_type label) const noexcept {
+            return std::hash<underlying_type>{}(static_cast<underlying_type>(label));
+        }
+    };
+} // namespace std
+
+#include <boost/container_hash/hash.hpp>
+namespace boost {
+    template <std::size_t SZ, class ALLOC, class OPTS>
+
+    struct hash<boost::container::small_vector<Hammer::IndexLabel, SZ, ALLOC, OPTS>>
+        : public boost::hash_detail::hash_base<boost::container::small_vector<Hammer::IndexLabel, SZ, ALLOC, OPTS>> {
+        std::size_t operator()(const boost::container::small_vector<Hammer::IndexLabel, SZ, ALLOC, OPTS>& v) const {
+            using underlying_type = typename std::underlying_type<Hammer::IndexLabel>::type;
+            const underlying_type* first = reinterpret_cast<const underlying_type*>(v.data());
+            return boost::hash_range(first, first + v.size());
+        }
+    };
+} // namespace boost
 
 #endif
