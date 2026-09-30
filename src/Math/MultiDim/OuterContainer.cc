@@ -253,13 +253,15 @@ namespace Hammer::MultiDimensional {
         //     result += item;
         // }
         ElementType result = 0;
-        for (auto& elem : _data) {
-            ElementType item = 1.;
-            ASSERT(elem.size() == _accessors.size());
-            for (size_t i = 0; i < elem.size(); ++i) {
-                auto tmp = _accessors[i](indices, elem[i].first.get());
+        for (const auto& elem: _data) {
+            ElementType item = 1.;        
+            const size_t sz = elem.size();
+            ASSERT(sz == _accessors.size());
+            for (size_t i = 0; sz != i; ++i) {
+                const auto tmp = _accessors[i](indices, elem[i].first.get());
                 item *= elem[i].second ? conj(tmp) : tmp;
             }
+            
             result += item;
         }
         return result;
@@ -267,7 +269,7 @@ namespace Hammer::MultiDimensional {
 
     OuterContainer::ElementType OuterContainer::value(IndexList::const_iterator first,
                                                       IndexList::const_iterator last) const {
-        ASSERT(_indexing.checkValidIndices(first, last));
+        //ASSERT(_indexing.checkValidIndices(first, last));
         // ElementType result = 0;
         // auto split = _indexing.splitIndices(first, last);
         // for (auto& elem : _data) {
@@ -284,19 +286,20 @@ namespace Hammer::MultiDimensional {
         //     result += item;
         // }
         // return result;
-        IndexList indices{first, last};
+        const IndexList indices{first, last};
         return value(indices);
     }
 
     OuterContainer::ElementType OuterContainer::value(const vector<IndexList>& indices) const {
         ASSERT(_indexing.checkValidIndices(indices));
         ElementType result = 0;
-        for (auto& elem : _data) {
-            auto it = elem.begin();
-            auto iti = indices.begin();
+        for (const auto& elem : _data) {
             ElementType item = 1.;
-            for (; it != elem.end(); ++it, ++iti) {
-                auto tmp = it->first->element(*iti);
+            const auto ite = elem.end();
+            auto it = elem.begin();
+            auto iti =indices.begin();
+            for (; ite != it; ++it, ++iti) {
+                const auto tmp = it->first->element(*iti);
                 item *= it->second ? conj(tmp) : tmp;
             }
             result += item;
