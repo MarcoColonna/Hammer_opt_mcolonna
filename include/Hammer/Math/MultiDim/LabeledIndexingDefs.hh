@@ -179,8 +179,8 @@ namespace Hammer::MultiDimensional {
 
     template <class BasicIndexing>
     IndexType LabeledIndexing<BasicIndexing>::labelIndex(IndexLabel label) const {
-        auto itstd::find = std::find(_labels.begin(), _labels.end(), label);
-        return static_cast<IndexType>(std::distance(_labels.begin(), itstd::find));
+        auto itfind = std::find(_labels.begin(), _labels.end(), label);
+        return static_cast<IndexType>(std::distance(_labels.begin(), itfind));
     }
 
 
@@ -221,7 +221,7 @@ namespace Hammer::MultiDimensional {
     }
 
     inline LabelsList flipListOfLabels(LabelsList labels) {
-        transform(labels.begin(), labels.end(), labels.begin(),
+        std::transform(labels.begin(), labels.end(), labels.begin(),
                   [](IndexLabel l) -> IndexLabel { return static_cast<IndexLabel>(-l); });
         return labels;
     }

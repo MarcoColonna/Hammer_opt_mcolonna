@@ -81,11 +81,10 @@ namespace std {
 } // namespace std
 
 #include <boost/container_hash/hash.hpp>
+#include <type_traits>
 namespace boost {
-    template <std::size_t SZ, class ALLOC, class OPTS>
-
-    struct hash<boost::container::small_vector<Hammer::IndexLabel, SZ, ALLOC, OPTS>>
-        : public boost::hash_detail::hash_base<boost::container::small_vector<Hammer::IndexLabel, SZ, ALLOC, OPTS>> {
+    template <std::size_t SZ, class ALLOC, class OPTS> struct hash<boost::container::small_vector<Hammer::IndexLabel, SZ, ALLOC, OPTS>>
+        {
         std::size_t operator()(const boost::container::small_vector<Hammer::IndexLabel, SZ, ALLOC, OPTS>& v) const {
             using underlying_type = typename std::underlying_type<Hammer::IndexLabel>::type;
             const underlying_type* first = reinterpret_cast<const underlying_type*>(v.data());

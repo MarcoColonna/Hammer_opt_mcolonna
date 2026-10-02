@@ -9,6 +9,7 @@
 //**** Please note the MCnet academic guidelines; see GUIDELINES for details
 
 // -*- C++ -*-
+
 #include <algorithm>
 
 #include <boost/algorithm/string.hpp>

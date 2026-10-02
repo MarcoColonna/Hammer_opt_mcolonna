@@ -242,144 +242,216 @@ namespace Hammer::MultiDimensional {
             return {hashA, hashB};
         }
 
-        Base* Dot::operator()(OTensor& a, const OTensor& b) { // NOLINT(readability-make-member-function-const)
-            DotOuterOptimizer graph{a, b, _indices};
-            TensorData fullResult;
-            OTensor* oResult = nullptr;
-            SharedTensorData currentTensorData;
-            IndexPairList leftIdxMap;
-            IndexPairList rightIdxMap;
-            bool currentHc = false;
-            vector<tuple<size_t, size_t, SharedTensorData, IndexPairList, IndexPairList>> intermediates;
-            graph.fillEquivalentSubGrGroups();
-            for (auto& elemA : a) {
-                for (const auto& elemB : b) {
-                    graph.assignDataToVertices(elemA, elemB);
-                    graph.createIdenticalSubGrGroups();
-                    auto dotData = graph.getNextSubGr();
-                    while (!get<0>(dotData).empty()) {
-                        pair<size_t, size_t> hashData = hashTempTensors(dotData);
-                        auto itCand =
-                            find_if(intermediates.begin(), intermediates.end(), [&](const auto& elem) -> bool {
-                                return (get<0>(elem) == hashData.first || get<0>(elem) == hashData.second);
-                            });
-                        if (itCand != intermediates.end()) {
-                            currentTensorData = get<2>(*itCand);
-                            leftIdxMap = get<3>(*itCand);
-                            rightIdxMap = get<4>(*itCand);
-                            currentHc = get<0>(*itCand) != hashData.first;
-                        } else {
-                            currentHc = false;
-                            auto as = get<0>(dotData);
-                            auto bs = get<1>(dotData);
-                            auto contractions = get<2>(dotData);
-                            leftIdxMap.clear(); // map of remaining indices old -> new
-                            if (as.front().first->rank() > 1) {
-                                leftIdxMap.reserve(as.front().first->rank());
-                                IndexList lefts;
-                                lefts.reserve(contractions.size());
-                                transform(contractions.begin(), contractions.end(), back_inserter(lefts),
-                                          [](const auto& elem) -> IndexType { return elem.first; });
-                                sort(lefts.begin(), lefts.end());
-                                auto itcheck = lefts.begin();
-                                IndexType removed = 0;
-                                for (IndexType i = 0; i < static_cast<IndexType>(as.front().first->rank()); ++i) {
-                                    if ((itcheck != lefts.end()) && (i == *itcheck)) {
-                                        ++removed;
-                                        ++itcheck;
-                                    } else {
-                                        leftIdxMap.emplace_back(i, i - removed);
-                                    }
-                                }
-                            }
-                            rightIdxMap.clear(); // map of remaining indices old -> new
-                            if (bs.front().first->rank() > 1) {
-                                rightIdxMap.reserve(bs.front().first->rank());
-                                IndexList rights;
-                                rights.reserve(contractions.size());
-                                transform(contractions.begin(), contractions.end(), back_inserter(rights),
-                                          [](const auto& elem) -> IndexType { return elem.second; });
-                                sort(rights.begin(), rights.end());
-                                auto itcheck = rights.begin();
-                                IndexType removed = 0;
-                                for (IndexType i = 0; i < static_cast<IndexType>(bs.front().first->rank()); ++i) {
-                                    if ((itcheck != rights.end()) && (i == *itcheck)) {
-                                        ++removed;
-                                        ++itcheck;
-                                    } else {
-                                        rightIdxMap.emplace_back(i, i - removed);
-                                    }
-                                }
-                            }
+        static pair<bool, bool> isSameDot(const OuterElemIterator::EntryType& a, const OuterElemIterator::EntryType& b,
+                                  const DotGroupType& info, const DotGroupType& infoOther) {
+            UNUSED(a);
+            UNUSED(b);
+            UNUSED(info);
+            UNUSED(infoOther);
+            return {false, false};
+        }
 
-                            if (as.size() == 1) {
-                                if (bs.size() == 1) {
-                                    if (as.front().first->rank() == 1 && bs.front().first->rank() == 1) {
-                                        currentTensorData = SharedTensorData{contractSingles(as.front(), bs.front())};
-                                    } else {
-                                        Ops::Dot dotter{contractions, {as.front().second, bs.front().second}};
-                                        currentTensorData =
-                                            calc2(as.front().first, *bs.front().first, dotter, "dot_outerdot");
+
+        Base* Dot::operator()(OTensor& a, const OTensor& b) {
+                // get the chunks
+                DotGroupList chunks = partitionContractions(a.getIndexing(), b.getIndexing());
+                TensorData fullResult;
+                OTensor* oResult = nullptr;
+                auto leftinfo = a.getIndexing().processShifts(chunks, IndexPairMember::Left);
+                auto rightinfo = b.getIndexing().processShifts(chunks, IndexPairMember::Right);
+                for(auto& elemA: a) {
+                    for(auto& elemB: b) {
+                        // check for repetitions
+                        PositionPairList multiplicities(leftinfo.size());
+                        FlagList used(leftinfo.size(), false);
+                        for(size_t i=0; i < leftinfo.size(); ++i) {
+                            if(used[i]) continue;
+                            used[i] = true;
+                            size_t count = 1;
+                            size_t countHc = 0;
+                            for (size_t j = i + 1; j < leftinfo.size(); ++j) {
+                                auto tmp = isSameDot(elemA, elemB, chunks[i+1], chunks[j+1]);
+                                if(tmp.first) {
+                                    if(tmp.second) {
+                                        ++countHc;
                                     }
+                                    else {
+                                        ++count;
+                                    }
+                                    used[j]=true;
+                                }
+                            }
+                            multiplicities[i] = {count, countHc};
+                        }
+                        Base::ElementType currentWeight = 1.;
+                        OuterElemIterator::EntryType currentTerm;
+                        for (size_t i = 0; i < leftinfo.size(); ++i) {
+                            if (multiplicities[i].first + multiplicities[i].second == 0)
+                                continue;
+                            // do the dot
+                            OuterElemIterator::EntryType leftTensors;
+                            leftTensors.reserve(get<0>(chunks[i + 1]).size());
+                            transform(get<0>(chunks[i + 1]).begin(), get<0>(chunks[i + 1]).end(), back_inserter(leftTensors),
+                                      [&](IndexType idx) -> const pair<SharedTensorData, bool>& { return elemA[idx]; });
+                            OuterElemIterator::EntryType rightTensors;
+                            rightTensors.reserve(get<1>(chunks[i + 1]).size());
+                            transform(get<1>(chunks[i + 1]).begin(), get<1>(chunks[i + 1]).end(), back_inserter(rightTensors),
+                                      [&](IndexType idx) -> const pair<SharedTensorData, bool>& { return elemB[idx]; });
+                            IndexList inners(get<2>(chunks[i + 1]).size());
+                            FlagList innerAdds(inners.size(), false);
+                            auto newdimlabs = getNewIndexLabels(a.getIndexing(), b.getIndexing(), chunks[i + 1]);
+                            OuterElemIterator itA{leftTensors};
+                            OuterElemIterator itAEnd = itA.end();
+                            size_t totalRankB = accumulate(rightTensors.begin(), rightTensors.end(), 0ul, [](PositionType tot, const pair<SharedTensorData, bool>& elem) -> PositionType { return tot + elem.first->rank(); });
+                            if(totalRankB == inners.size()) {
+                                IndexList::iterator itP1, itP2;
+                                if (newdimlabs.first.size() == 0) {
+                                    Base::ElementType newscal;
+                                    for (; itA != itAEnd; ++itA) {
+                                        itP1 = inners.begin();
+                                        a.getIndexing().splitPosition(itA, chunks[i + 1], get<0>(leftinfo[i]),
+                                                                      get<1>(leftinfo[i]), inners, innerAdds);
+                                        Base::ElementType firstTerm = _hc.first ? conj(*itA) : *itA;
+                                        for(auto& entry: rightTensors) {
+                                            itP2 = itP1 + static_cast<ptrdiff_t>(entry.first->rank());
+                                            Base::ElementType secondTerm = (!_hc.second != !entry.second)
+                                                                                ? conj(entry.first->element(itP1, itP2))
+                                                                                : entry.first->element(itP1, itP2);
+                                            firstTerm *= secondTerm;
+                                            if(isZero(secondTerm)) {
+                                                break;
+                                            }
+                                            itP1 = itP2;
+                                        }
+                                        newscal += firstTerm;
+                                    }
+                                    currentWeight *=
+                                        pow(newscal, multiplicities[i].first) * pow(conj(newscal), multiplicities[i].second);
                                 } else {
-                                    currentTensorData = SharedTensorData{contractStar(as.front(), bs, contractions)};
+                                    auto newsparse = makeEmptySparse(newdimlabs.first, newdimlabs.second);
+                                    STensor* result = static_cast<STensor*>(newsparse.get());
+                                    for (; itA != itAEnd; ++itA) {
+                                        itP1 = inners.begin();
+                                        PositionType tmpLeft =
+                                            a.getIndexing().splitPosition(itA, chunks[i + 1], get<0>(leftinfo[i]),
+                                                                          get<1>(leftinfo[i]), inners, innerAdds);
+                                        Base::ElementType firstTerm = _hc.first ? conj(*itA) : *itA;
+                                        for (auto& entry : rightTensors) {
+                                            itP2 = itP1 + static_cast<ptrdiff_t>(entry.first->rank());
+                                            Base::ElementType secondTerm = (!_hc.second != !entry.second)
+                                                                               ? conj(entry.first->element(itP1, itP2))
+                                                                               : entry.first->element(itP1, itP2);
+                                            firstTerm *= secondTerm;
+                                            if (isZero(secondTerm)) {
+                                                break;
+                                            }
+                                            itP1 = itP2;
+                                        }
+                                        (*result)[tmpLeft] += firstTerm;
+                                    }
+                                    SharedTensorData tmpShared{newsparse.release()};
+                                    currentTerm.insert(currentTerm.end(), multiplicities[i].first, {tmpShared, false});
+                                    currentTerm.insert(currentTerm.end(), multiplicities[i].second, {tmpShared, true});
                                 }
-                            } else if (bs.size() == 1) {
-                                // need to flip constractions
-                                IndexPairList flippedContractions;
-                                flippedContractions.reserve(contractions.size());
-                                for (const auto& elem : contractions) {
-                                    flippedContractions.emplace_back(elem.second, elem.first);
-                                }
-                                currentTensorData = SharedTensorData{contractStar(bs.front(), as, flippedContractions)};
                             }
-                            intermediates.emplace_back(hashData.first, hashData.second, currentTensorData, leftIdxMap,
-                                                       rightIdxMap);
+                            else {
+                                OuterElemIterator itBEnd = OuterElemIterator{rightTensors}.end();
+                                if (newdimlabs.first.size() == 0) {
+                                    Base::ElementType newscal;
+                                    for (; itA != itAEnd; ++itA) {
+                                        a.getIndexing().splitPosition(itA, chunks[i + 1], get<0>(leftinfo[i]),
+                                                                      get<1>(leftinfo[i]), inners, innerAdds);
+                                        Base::ElementType firstTerm = _hc.first ? conj(*itA) : *itA;
+                                        OuterElemIterator itB{rightTensors};
+                                        for (; itB != itBEnd; ++itB) {
+                                            PositionType tmpRight = b.getIndexing().splitPosition(
+                                                itB, chunks[i + 1], get<0>(rightinfo[i]), get<1>(rightinfo[i]), inners,
+                                                innerAdds, true);
+                                            if (tmpRight == numeric_limits<size_t>::max())
+                                                continue;
+                                            Base::ElementType secondTerm = _hc.second ? conj(*itB) : *itB;
+                                            newscal += firstTerm * secondTerm;
+                                        }
+                                    }
+                                    currentWeight *= pow(newscal, multiplicities[i].first) *
+                                                     pow(conj(newscal), multiplicities[i].second);
+                                } else {
+                                    auto newsparse = makeEmptySparse(newdimlabs.first, newdimlabs.second);
+                                    STensor* result = static_cast<STensor*>(newsparse.get());
+                                    for (; itA != itAEnd; ++itA) {
+                                        PositionType tmpLeft =
+                                            a.getIndexing().splitPosition(itA, chunks[i + 1], get<0>(leftinfo[i]),
+                                                                          get<1>(leftinfo[i]), inners, innerAdds);
+                                        Base::ElementType firstTerm = _hc.first ? conj(*itA) : *itA;
+                                        OuterElemIterator itB{rightTensors};
+                                        for (; itB != itBEnd; ++itB) {
+                                            PositionType tmpRight = b.getIndexing().splitPosition(
+                                                itB, chunks[i + 1], get<0>(rightinfo[i]), get<1>(rightinfo[i]), inners,
+                                                innerAdds, true);
+                                            if (tmpRight == numeric_limits<size_t>::max())
+                                                continue;
+                                            Base::ElementType secondTerm = _hc.second ? conj(*itB) : *itB;
+                                            (*result)[tmpLeft * get<2>(rightinfo[i]) + tmpRight] +=
+                                                firstTerm * secondTerm;
+                                        }
+                                    }
+                                    SharedTensorData tmpShared{newsparse.release()};
+                                    currentTerm.insert(currentTerm.end(), multiplicities[i].first, {tmpShared, false});
+                                    currentTerm.insert(currentTerm.end(), multiplicities[i].second, {tmpShared, true});
+                                }
+                            }
                         }
-                        graph.collapseSubGrGroup(currentTensorData, currentHc, leftIdxMap, rightIdxMap);
-                        dotData = graph.getNextSubGr();
-                    }
-                    auto [currentTerm, currentWeight] = graph.retrieveNewData();
-
-                    // add term
-                    if (currentTerm.empty()) {
-                        if (fullResult.get() == nullptr) {
-                            fullResult = makeScalar(currentWeight);
-                        } else {
-                            fullResult->element({}) += currentWeight;
+                        // now add those untouched
+                        for(auto elem: get<0>(chunks[0])) {
+                            currentTerm.insert(currentTerm.end(), {elemA[elem].first, !elemA[elem].second != !_hc.first});
                         }
-                    } else if (currentTerm.size() == 1) {
-                        TensorData out = currentTerm[0].first->clone();
-                        if (currentTerm[0].second) {
-                            out->conjugate();
+                        for(auto elem: get<1>(chunks[0])) {
+                            currentTerm.insert(currentTerm.end(), {elemB[elem].first, !elemB[elem].second != !_hc.second});
                         }
-                        if (!isZero(currentWeight - 1.)) {
-                            out->operator*=(currentWeight);
+                        if(currentTerm.size() == 0) {
+                            if(fullResult.get() == nullptr) {
+                                fullResult = makeScalar(currentWeight.real());
+                            }
+                            else {
+                                fullResult->element({}) += (currentWeight.real());
+                            }
                         }
-                        if (fullResult.get() == nullptr) {
-                            fullResult = std::move(out);
-                        } else {
-                            Ops::Sum summer{};
-                            fullResult = calc2(std::move(fullResult), *out, summer, "sum_outerdot");
+                        else if(currentTerm.size() == 1) {
+                            TensorData out = currentTerm[0].first->clone();
+                            if(currentTerm[0].second) {
+                                out->conjugate();
+                            }
+                            if (!isZero(currentWeight - 1.)) {
+                                out->operator*=(currentWeight);
+                            }
+                            if(fullResult.get() == nullptr) {
+                                fullResult = move(out);
+                            }
+                            else {
+                                Ops::Sum summer{};
+                                fullResult = calc2(move(fullResult), *out, summer, "sum_outerdot");
+                            }
                         }
-                    } else {
-                        if (!isZero(currentWeight - 1.)) {
-                            auto temp = currentTerm.back();
-                            auto candNew = temp.first->clone();
-                            candNew->operator*=(temp.second ? conj(currentWeight) : currentWeight);
-                            currentTerm.back().first = SharedTensorData{candNew.release()};
-                        }
-                        if (oResult != nullptr) {
-                            oResult->addTerm(currentTerm);
-                        } else {
-                            fullResult = combineSharedTensors(std::move(currentTerm));
-                            oResult = static_cast<OTensor*>(fullResult.get());
+                        else {
+                            if (!isZero(currentWeight - 1.)) {
+                                auto temp = currentTerm.back();
+                                currentTerm.pop_back();
+                                auto candNew = temp.first->clone();
+                                candNew->operator*=(temp.second ? conj(currentWeight) : currentWeight);
+                                currentTerm.push_back({SharedTensorData{candNew.release()}, temp.second});
+                            }
+                            if (oResult != nullptr) {
+                                oResult->addTerm(currentTerm);
+                            } else {
+                                fullResult = combineSharedTensors(move(currentTerm));
+                                oResult = static_cast<OTensor*>(fullResult.get());
+                            }
                         }
                     }
                 }
+                return static_cast<Base*>(fullResult.release());
             }
-            return static_cast<Base*>(fullResult.release());
-        }
+
 
         Base* Dot::operator()(OTensor& a, const STensor& b) { // NOLINT(readability-make-member-function-const)
             DotGroupList chunks = partitionContractions(a.getIndexing(), b.getIndexing());
@@ -572,11 +644,12 @@ namespace Hammer::MultiDimensional {
                 size_t finish = 0ul;
                 for (const auto& entry : a._data[0]) {
                     finish += entry.first->rank();
-                    a._accessors.emplace_back(
-                        [start, finish](const IndexList& list, const IContainer* item) -> Base::ElementType {
-                            return item->element(list.begin() + static_cast<ptrdiff_t>(start),
-                                                 list.begin() + static_cast<ptrdiff_t>(finish));
-                        });
+                    a._accessors.emplace_back(start, finish);
+                    //a._accessors.emplace_back(
+                    //    [start, finish](const IndexList& list, const IContainer* item) -> Base::ElementType {
+                    //        return item->element(list.begin() + static_cast<ptrdiff_t>(start),
+                    //                             list.begin() + static_cast<ptrdiff_t>(finish));
+                    //    });
                     start = finish;
                 }
             }
@@ -1285,6 +1358,110 @@ namespace Hammer::MultiDimensional {
             return {dims, labels};
         }
 
+        DotGroupList Dot::partitionContractions(const BlockIndexing& lhs,
+                                                                   const BlockIndexing& rhs) const {
+                DotGroupList partitions;
+                FlagList validPartitions;
+                IndexList lfree(lhs.numSubIndexing());
+                IndexList rfree(rhs.numSubIndexing());
+                iota(lfree.begin(), lfree.end(), 0);
+                iota(rfree.begin(), rfree.end(), 0);
+                //Placeholder for the untouched
+                auto frontelem = make_tuple<IndexList, IndexList, IndexPairList>({}, {}, {});
+                partitions.push_back(frontelem);
+                validPartitions.push_back(true);
+                for (auto& elem : _indices) {
+                    auto lloc = lhs.getElementIndex(elem.first).first;
+                    auto rloc = rhs.getElementIndex(elem.second).first;
+                    lfree.erase(remove(lfree.begin(), lfree.end(), lloc), lfree.end());
+                    rfree.erase(remove(rfree.begin(), rfree.end(), rloc), rfree.end());
+                    PositionList finds{};
+                    auto match = [&](size_t pos, IndexType valL, IndexType valR) -> bool {
+                        const auto& data = partitions[pos];
+                        return matchPartitions<0>(data, valL) || matchPartitions<1>(data, valR);
+                    };
+                    for (size_t i = 0; i< partitions.size(); ++i) { // Find all matches on the left or the right
+                        if (validPartitions[i] && match(i, lloc, rloc)) {
+                            finds.push_back(i);
+                        }
+                    }
+                    auto merge = [&](IndexType lidx, IndexType ridx, IndexPair contraction) -> void {
+                        auto& data = partitions[finds[0]];
+                        addPartitionEntry<0>(data, lidx);
+                        addPartitionEntry<1>(data, ridx);
+                        addPartitionEntry<2>(data, contraction);
+                    };
+                    auto merge_range = [&](size_t other) -> void {
+                        auto& from = partitions[finds[other]];
+                        auto& to = partitions[finds[0]];
+                        appendPartitionEntries<0>(from, to);
+                        appendPartitionEntries<1>(from, to);
+                        appendPartitionEntries<2>(from, to);
+                    };
+                    if (finds.size() > 0) { // Insert elem into first found match
+                        merge(lloc, rloc, elem);
+                        for (size_t idx = 1; idx < finds.size(); ++idx) { // merge in other finds into first found match
+                            if(validPartitions[finds[idx]]) {
+                                merge_range(idx);
+                                validPartitions[finds[idx]] = false;
+                            }
+                        }
+                    }
+                    else {
+                        auto newelem = make_tuple<IndexList, IndexList, IndexPairList>({lloc}, {rloc}, {elem});
+                        partitions.push_back(newelem);
+                        validPartitions.push_back(true);
+                    }
+                }
+                // eliminate already merged partitions
+                for(size_t i = partitions.size(); 0 < i--;) {
+                    if(!validPartitions[i]) partitions.erase(partitions.begin() + static_cast<ptrdiff_t>(i));
+                }
+                // sort contractions
+                for(auto& elem: partitions) {
+                    std::sort(get<2>(elem).begin(), get<2>(elem).end(),
+                              [](const IndexPair& a, const IndexPair& b) -> bool { return a.second < b.second; });
+                }
+                //Add in untouched tensors
+                partitions[0] = DotGroupType{lfree, rfree, {}};
+                return partitions;
+            }
+
+
+            pair<IndexList, LabelsList> Dot::getNewIndexLabels(const BlockIndexing& lhs, const BlockIndexing& rhs,
+                                                               const DotGroupType& chunk) {
+                IndexList dims;
+                LabelsList labels;
+                map<IndexType, IndexType> leftPosMaps;
+                map<IndexType, IndexType> rightPosMaps;
+                IndexType offset = 0;
+                for (auto elem : get<0>(chunk)) {
+                    leftPosMaps.insert({elem, offset});
+                    dims.insert(dims.end(), lhs.getSubIndexing(elem).dims().begin(), lhs.getSubIndexing(elem).dims().end());
+                    labels.insert(labels.end(), lhs.getSubIndexing(elem).labels().begin(), lhs.getSubIndexing(elem).labels().end());
+                    offset = static_cast<IndexType>(offset + lhs.getSubIndexing(elem).rank());
+                }
+                for (auto elem : get<1>(chunk)) {
+                    rightPosMaps.insert({elem, offset});
+                    dims.insert(dims.end(), rhs.getSubIndexing(elem).dims().begin(), rhs.getSubIndexing(elem).dims().end());
+                    labels.insert(labels.end(), rhs.getSubIndexing(elem).labels().begin(),
+                                  rhs.getSubIndexing(elem).labels().end());
+                    offset = static_cast<IndexType>(offset + rhs.getSubIndexing(elem).rank());
+                }
+                set<size_t> deletes;
+                for(auto& elem: get<2>(chunk)) {
+                    auto left = lhs.getElementIndex(elem.first);
+                    auto right = rhs.getElementIndex(elem.second);
+                    deletes.insert(leftPosMaps[left.first] + left.second);
+                    deletes.insert(rightPosMaps[right.first] + right.second);
+                }
+                for(auto elem: reverse_range(deletes)) {
+                    dims.erase(dims.begin() + static_cast<ptrdiff_t>(elem));
+                    labels.erase(labels.begin() + static_cast<ptrdiff_t>(elem));
+                }
+                return {dims, labels};
+            }
+
         pair<IndexList, LabelsList> Dot::getNewIndexLabels(const BlockIndexing& lhs,
                                                            const LabeledIndexing<AlignedIndexing>& rhs,
                                                            const DotGroupType& chunk) {
@@ -1316,7 +1493,7 @@ namespace Hammer::MultiDimensional {
 
 
         pair<IndexList, LabelsList> Dot::getNewIndexLabels(const pair<SharedTensorData, bool>& a,
-                                                           const vector<pair<IndexType, IndexType>>& contracted) {
+                                                           const IndexPairList& contracted) {
             const IndexList& srcD = a.first->dims();
             const LabelsList srcL = a.second ? flipListOfLabels(a.first->labels()) : a.first->labels();
             const size_t n = srcD.size();

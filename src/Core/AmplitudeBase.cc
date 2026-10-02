@@ -107,7 +107,7 @@ namespace Hammer {
                                                  const IndexLabel label, const MD::SharedTensorData& origin,
                                                  MD::SharedTensorData& proj) const {
         // o + sum_j x_j (sum_i wc_i^j * v_i^j)
-        vector<IndexType> dims{
+        IndexList dims{
             {static_cast<IndexType>(_mWCNames.size()),
              static_cast<IndexType>(subspace.size() + 1)}}; // size is + 1 to include central values in zeroth component
         proj = MD::SharedTensorData{MD::makeEmptySparse(dims, {_mWCLabel, label})};
@@ -146,8 +146,8 @@ namespace Hammer {
         preProcessWCValues(vec);
         ASSERT(proj->rank() > 0 && proj->rank() <= 2); // NOLINT(readability-simplify-boolean-expr)
         for (IndexType i = 0; i < proj->dims()[0]; ++i) {
-            vector<IndexType> indices =
-                (proj->rank() == 2) ? vector<IndexType>{i, static_cast<IndexType>(index + 1)} : vector<IndexType>{i};
+            IndexList indices =
+                (proj->rank() == 2) ? IndexList{i, static_cast<IndexType>(index + 1)} : IndexList{i};
             if (!isZero(vec[i] - proj->element(indices))) {
                 proj->element(indices) = vec[i];
             }

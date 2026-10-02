@@ -55,6 +55,8 @@ from cpython.version cimport PY_MAJOR_VERSION
 
 import cmath
 
+from cppdefs cimport IndexList
+
 HAVE_NUMPY = True
 try:
     import numpy as np
@@ -744,7 +746,10 @@ cdef class Hammer:
         self.wrapped.removeProcess(proc_id)
 
     def set_event_histogram_bin(self, name: AnyStr, bins: List[int]) -> NoReturn:
-        self.wrapped.setEventHistogramBin(name, bins)
+        cdef IndexList ibins
+        for b in bins:
+            ibins.push_back(b)
+        self.wrapped.setEventHistogramBin(name, ibins)
 
     def fill_event_histogram(self, name: AnyStr, values: List[float]) -> NoReturn:
         self.wrapped.fillEventHistogram(name, values)
@@ -886,16 +891,11 @@ cdef class Hammer:
     def add_total_sum_of_weights(self, compress: bool = False, with_errors: bool = False) -> NoReturn:
         self.wrapped.addTotalSumOfWeights(compress, with_errors)
 
-    def add_histogram(self, name, bins, has_under_over_flow=False, ranges=None) -> NoReturn:
-        cdef string s_name = name
-        if isinstance(bins, BinSizes):
-            if ranges is None:
-                ranges = BinRanges()
-            self.wrapped.addHistogram(s_name, (<BinSizes>bins).to_cpp(), has_under_over_flow, (<BinRanges>ranges).to_cpp())
-        elif isinstance(bins, BinEdges):
-            self.wrapped.addHistogram(s_name, (<BinEdges>bins).to_cpp(), has_under_over_flow)
-        else:
-            raise TypeError(f"Expected BinSizes or BinEdges, got {type(bins)}")
+    def add_histogram(self, name: AnyStr, bin_sizes: List[int], has_under_over_flow: bool = True, ranges: List[Tuple[float, float]] = []):
+        cdef IndexList ibin_sizes
+        for b in bin_sizes:
+            ibin_sizes.push_back(b)
+        self.wrapped.addHistogram(name, ibin_sizes, has_under_over_flow, ranges)
 
 #    def __add_histogram_namedimpl(self, **kwargs):
 #        if 'name' not in kwargs:
@@ -1291,7 +1291,7 @@ cdef class Hammer:
             shape = self.wrapped.getHistogramShape(name)
             res = self.wrapped.getHistogram(name, scheme, specialization)
             results = np.array([BinContents.from_cpp(o) for o in res], dtype=BinContents)
-            results.reshape(list(shape))
+            results.reshape([shape[i] for i in range(shape.size())])
             return results
 
         def get_numpy_histograms(self, name: AnyStr, scheme: AnyStr, specialization: AnyStr = '') -> Dict[FrozenSet[FrozenSet[int]], npt.NDArray[BinContents]]:
@@ -1315,7 +1315,8 @@ cdef class Hammer:
         return self.wrapped.getHistogramBinEdges(name)
 
     def get_histogram_shape(self, name: AnyStr) -> List[int]:
-        return self.wrapped.getHistogramShape(name)
+        cdef IndexList shape = self.wrapped.getHistogramShape(name)
+        return [shape[i] for i in range(shape.size())]
 
     def histogram_has_under_over_flows(self, name: AnyStr) -> bool:
         return self.wrapped.histogramHasUnderOverFlows(name)

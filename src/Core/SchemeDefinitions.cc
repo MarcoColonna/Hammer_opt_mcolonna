@@ -18,6 +18,8 @@
 #include "Hammer/Tools/HammerSerial.hh"
 #include "Hammer/Tools/Pdg.hh"
 
+#include "Hammer/Math/MultiDimensional.fhh"
+
 using namespace std;
 
 namespace Hammer {

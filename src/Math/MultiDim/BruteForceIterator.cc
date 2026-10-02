@@ -112,10 +112,6 @@ namespace Hammer::MultiDimensional {
 
         }
 
-    IndexList BruteForceIterator::operator*() const {
-        return _state;
-    }
-
     bool operator==(const BruteForceIterator& a, const BruteForceIterator& b) noexcept
     {
         if (LIKELY(a._state.size() == b._state.size())) {

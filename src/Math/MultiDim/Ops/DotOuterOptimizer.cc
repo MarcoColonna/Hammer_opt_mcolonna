@@ -573,12 +573,12 @@ namespace Hammer::MultiDimensional {
             const VertexId startId = Vertex::getIndex(Vertex::Type::COLLAPSED, startIdx);
             const VertexId endId = Vertex::getIndex(Vertex::Type::COLLAPSED, _nextVertexId);
             auto findLeftIndex = [&](IndexType idx) {
-                return find_if(leftIndexMap.begin(), leftIndexMap.end(),
+                return std::find_if(leftIndexMap.begin(), leftIndexMap.end(),
                                [idx](const std::pair<IndexType, IndexType>& p) { return p.first == idx; })
                     ->second;
             };
             auto findRightIndex = [&](IndexType idx) {
-                return find_if(rightIndexMap.begin(), rightIndexMap.end(),
+                return std::find_if(rightIndexMap.begin(), rightIndexMap.end(),
                                [idx](const std::pair<IndexType, IndexType>& p) { return p.first == idx; })
                     ->second;
             };

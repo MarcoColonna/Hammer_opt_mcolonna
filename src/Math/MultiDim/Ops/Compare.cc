@@ -59,7 +59,7 @@ namespace Hammer::MultiDimensional {
             if (a.rank() == 0) {
                 result &= isZero(a.element({}) - b.element({}));
             } else {
-                BruteForceIterator bf{a.dims()};
+                BruteForceIteratorRange bf{a.dims()};
                 for (auto elem : bf) {
                     result &= isZero(a.element(elem) - b.element(elem));
                     if (!result) {

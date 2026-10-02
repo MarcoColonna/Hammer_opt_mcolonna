@@ -284,6 +284,20 @@ cdef extern from "Hammer/IndexTypes.hh" namespace "Hammer":
         NUMERATOR "Hammer::WTerm::NUMERATOR"
         DENOMINATOR "Hammer::WTerm::DENOMINATOR"
 
+
+
+from libcpp.memory cimport allocator
+
+cdef extern from "boost/container/small_vector.hpp" namespace "boost::container":
+    cdef cppclass SmallVector16 "boost::container::small_vector<uint16_t, 20, std::allocator<uint16_t>, void>":
+        void push_back(uint16_t)
+        size_t size()
+        uint16_t& operator[](size_t)
+
+ctypedef SmallVector16 IndexList
+
+
+
 cdef extern from "Hammer/Hammer.hh" namespace "Hammer":
 
     ## wrapper of `Hammer::WTerm` enum class
@@ -299,7 +313,7 @@ cdef extern from "Hammer/Hammer.hh" namespace "Hammer":
         void initEvent(double)
         size_t addProcess(Process)
         void removeProcess(size_t)
-        void setEventHistogramBin(string, vector[uint16_t])
+        void setEventHistogramBin(string, IndexList)
         void fillEventHistogram(string, vector[double])
         void setEventBaseWeight(double)
         void processEvent(PAction)
@@ -325,7 +339,7 @@ cdef extern from "Hammer/Hammer.hh" namespace "Hammer":
         void setOptions(string)
         void setHeader(string)
         void addTotalSumOfWeights(bool, bool)
-        void addHistogram(string, vector[uint16_t], bool, vector[pair[double, double]])
+        void addHistogram(string, IndexList, bool, vector[pair[double, double]])
         void addHistogram(string, vector[vector[double]], bool)
         void collapseProcessesInHistogram(string)
         void keepErrorsInHistogram(string, bool)
@@ -402,6 +416,6 @@ cdef extern from "Hammer/Hammer.hh" namespace "Hammer":
         UMap[cset[cset[size_t]], vector[BinContents]] getHistograms(string, string, string)
         cset[cset[size_t]] getHistogramEventIds(string, string, string)
         vector[vector[double]] getHistogramBinEdges(string)
-        vector[uint16_t] getHistogramShape(string)
+        IndexList getHistogramShape(string)
         bool histogramHasUnderOverFlows(string)
 

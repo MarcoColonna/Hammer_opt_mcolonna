@@ -26,6 +26,7 @@
 #include "Hammer/Tools/Pdg.fhh"
 #include "Hammer/Tools/IOTypes.hh"
 
+#include "Hammer/Math/MultiDimensional.fhh"
 
 namespace Hammer {
 
@@ -426,7 +427,7 @@ namespace Hammer {
         /// @param[in] processes
         /// @param[in] specialization
         /// @return
-        [[nodiscard]] double getWeight(const std::string& scheme, const std::PositionList& processes = {},
+        [[nodiscard]] double getWeight(const std::string& scheme, const std::vector<HashId>& processes = {},
                                        const std::string& specialization = Spec::none()) const;
 
         /// @brief

@@ -51,8 +51,8 @@ namespace Hammer::MultiDimensional {
     }
 
     bool SequentialIndexing::checkValidIndices(IndexList::const_iterator first, IndexList::const_iterator last) const {
-        if (indices.size() != _dimensions.size()){
-            return false;
+        if (distance(first, last) != static_cast<ptrdiff_t>(_dimensions.size())){
+                return false;
         }
         return inner_product(first, last, _dimensions.begin(), true, logical_and<>(), less<>());
     }

@@ -54,6 +54,9 @@ namespace Hammer::MultiDimensional {
             getNewIndexLabels(const LabeledIndexing<AlignedIndexing>& lhs, const BlockIndexing& rhs,
                               const DotGroupType& chunk);
             [[nodiscard]] static std::pair<IndexList, LabelsList>
+            getNewIndexLabels(const BlockIndexing& lhs, const BlockIndexing& rhs,
+                              const DotGroupType& chunk);
+            [[nodiscard]] static std::pair<IndexList, LabelsList>
             getNewIndexLabels(const LabeledIndexing<SequentialIndexing>& lhs, const BlockIndexing& rhs,
                               const DotGroupType& chunk);
             [[nodiscard]] static std::pair<IndexList, LabelsList>
@@ -74,7 +77,7 @@ namespace Hammer::MultiDimensional {
             [[nodiscard]] static IContainer*
             contractStar(const std::pair<SharedTensorData, bool>& tensorA,
                          const std::vector<std::pair<SharedTensorData, bool>>& tensorsB,
-                         const std::vector<IndexPair>& contractions);
+                         const IndexPairList& contractions);
 
 
             [[nodiscard]] static IContainer* contractSingles(const std::pair<SharedTensorData, bool>& tensorA,
@@ -86,10 +89,15 @@ namespace Hammer::MultiDimensional {
                 const std::pair<IndexPair, IndexPair>& contractions);
 
             // DotGroupList partitionContractions(const BlockIndexing& lhs, const BlockIndexing& rhs) const;
-            [[nodiscard]] DotGroupList partitionContractions(const LabeledIndexing<AlignedIndexing>& lhs,
-                                                             const BlockIndexing& rhs) const;
-            [[nodiscard]] DotGroupList partitionContractions(const BlockIndexing& lhs,
-                                                             const LabeledIndexing<AlignedIndexing>& rhs) const;
+            //[[nodiscard]] DotGroupList partitionContractions(const LabeledIndexing<AlignedIndexing>& lhs,
+            //                                                 const BlockIndexing& rhs) const;
+            //[[nodiscard]] DotGroupList partitionContractions(const BlockIndexing& lhs,
+            //                                                const LabeledIndexing<AlignedIndexing>& rhs) const;
+
+            [[nodiscard]] DotGroupList partitionContractions(const BlockIndexing& lhs, const BlockIndexing& rhs) const;
+            [[nodiscard]] DotGroupList partitionContractions(const LabeledIndexing<AlignedIndexing>& lhs, const BlockIndexing& rhs) const;
+            [[nodiscard]] DotGroupList partitionContractions(const BlockIndexing& lhs, const LabeledIndexing<AlignedIndexing>& rhs) const;
+
 
             IndexPairList _indices;
             std::pair<bool, bool> _hc;

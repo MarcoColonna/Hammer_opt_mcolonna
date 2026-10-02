@@ -138,7 +138,7 @@ namespace Hammer::MultiDimensional {
         return newPos;
     }
 
-    std::tuple<IndexList, std::FlagList, PositionType> AlignedIndexing::processShifts(const IndexPairList& pairs,
+    std::tuple<IndexList, FlagList, PositionType> AlignedIndexing::processShifts(const IndexPairList& pairs,
                                                                                           IndexPairMember which) const {
         map<IndexType, IndexType> inners;
         for (IndexType i = 0; i < static_cast<IndexType>(pairs.size()); ++i) {

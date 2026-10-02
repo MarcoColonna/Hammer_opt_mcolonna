@@ -29,7 +29,7 @@ namespace Hammer::MultiDimensional {
 
         friend class BruteForceIterator;
 	public:
-	    explicit BruteForceIteratorRange(Hammer::IndexList dimensions, Hammer::IndexList fixed = {})
+	    explicit BruteForceIteratorRange(Hammer::IndexList dimensions, Hammer::IndexList fixed = {});
 
         BruteForceIterator begin() const;
 	    BruteForceIterator end() const;
