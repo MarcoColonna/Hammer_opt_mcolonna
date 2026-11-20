@@ -46,7 +46,7 @@ namespace Hammer {
         TestableAmplBToQLepNuBase ampl;
         ampl.setSettingsHandler(sh);
 
-        vector<IndexType> dims{{11, 8, 3, 2, 2, 2}};
+        IndexList dims{{11, 8, 3, 2, 2, 2}};
         ampl.addTensor(Tensor{"AmplBDstarLepNu", MD::makeEmptySparse(dims, {WILSON_BCTAUNU, FF_BDSTAR, SPIN_DSTAR,
                                                                             SPIN_NUTAU, SPIN_NUTAU_REF, SPIN_TAUP})});
         ampl.updateWilsonCoeffLabelPrefix();
@@ -94,7 +94,7 @@ namespace Hammer {
         TestableAmplBToQLepNuBase ampl;
         ampl.setSettingsHandler(sh);
 
-        vector<IndexType> dims{{11, 8, 3, 2, 2, 2}};
+        IndexList dims{{11, 8, 3, 2, 2, 2}};
         ampl.addTensor(Tensor{"AmplBDstarLepNu", MD::makeEmptySparse(dims, {WILSON_BCTAUNU, FF_BDSTAR, SPIN_DSTAR,
                                                                             SPIN_NUTAU, SPIN_NUTAU_REF, SPIN_TAUP})});
         ampl.updateWilsonCoeffLabelPrefix();

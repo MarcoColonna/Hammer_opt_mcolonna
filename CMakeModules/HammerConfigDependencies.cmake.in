@@ -3,6 +3,10 @@ include(CMakeFindDependencyMacro)
 @HAMMER_FIND_SANITIZERS@
 find_dependency(yaml-cpp @YamlCpp_MIN_VERSION@ CONFIG)
 
+if(NOT TARGET yaml-cpp::yaml-cpp AND TARGET yaml-cpp)
+    add_library(yaml-cpp::yaml-cpp ALIAS yaml-cpp)
+endif()
+
 find_dependency(Boost @BOOST_MINREQ_VERSION@ COMPONENTS thread)
 
 @HAMMER_FIND_ROOT@

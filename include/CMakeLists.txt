@@ -140,3 +140,10 @@ if(INSTALL_HEADERS)
         COMPONENT Hammer_Development
     )
 endif()
+
+# Public tensor types are used by the installed Hammer headers.
+install(FILES
+    ${PROJECT_SOURCE_DIR}/include/Hammer/Math/MultiDimensional.fhh
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/Hammer/Math
+    COMPONENT Hammer_Development
+)

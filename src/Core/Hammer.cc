@@ -84,13 +84,13 @@ namespace Hammer {
         _event->removeProcess(id);
     }
 
-    void Hammer::setEventHistogramBin(const string& name, const IndexList& bins) {
-        _event->setHistogramBin(name, bins);
+    void Hammer::setEventHistogramBin(const string& name, const vector<uint16_t>& bins) {
+        _event->setHistogramBin(name, IndexList{bins.begin(), bins.end()});
     }
 
     void Hammer::fillEventHistogram(const string& name, const vector<double>& values) {
         if (_histograms->canFill(name, values)) {
-            setEventHistogramBin(name, _histograms->getBinIndices(name, values));
+            _event->setHistogramBin(name, _histograms->getBinIndices(name, values));
         }
     }
 
@@ -414,16 +414,16 @@ namespace Hammer {
     }
 
     void Hammer::addTotalSumOfWeights(const bool compress, const bool witherrors) {
-        addHistogram("Total Sum of Weights", IndexList{1}, false);
+        addHistogram("Total Sum of Weights", vector<uint16_t>{1}, false);
         if (compress) {
             collapseProcessesInHistogram("Total Sum of Weights");
         }
         keepErrorsInHistogram("Total Sum of Weights", witherrors);
     }
 
-    void Hammer::addHistogram(const string& name, const IndexList& binSizes, bool hasUnderOverFlow,
+    void Hammer::addHistogram(const string& name, const vector<uint16_t>& binSizes, bool hasUnderOverFlow,
                               const vector<pair<double, double>>& ranges) {
-        _histograms->addHistogramDefinition(name, binSizes, hasUnderOverFlow, ranges);
+        _histograms->addHistogramDefinition(name, IndexList{binSizes.begin(), binSizes.end()}, hasUnderOverFlow, ranges);
     }
 
     void Hammer::addHistogram(const string& name, const vector<vector<double>>& binEdges, bool hasUnderOverFlow) {
@@ -748,7 +748,7 @@ namespace Hammer {
         return {};
     }
 
-    double Hammer::getWeight(const string& scheme, const std::vector<HashId>& processes,
+    double Hammer::getWeight(const string& scheme, const vector<size_t>& processes,
                              const string& specialization) const {
         auto tempProcesses = processes;
         if (tempProcesses.empty()) {
@@ -882,8 +882,9 @@ namespace Hammer {
         return _histograms->getHistogramEdges(name);
     }
 
-    IndexList Hammer::getHistogramShape(const string& name) const {
-        return _histograms->getHistogramShape(name);
+    vector<uint16_t> Hammer::getHistogramShape(const string& name) const {
+        const auto shape = _histograms->getHistogramShape(name);
+        return {shape.begin(), shape.end()};
     }
 
     bool Hammer::histogramHasUnderOverFlows(const string& name) const {

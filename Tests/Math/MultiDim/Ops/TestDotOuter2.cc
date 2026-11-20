@@ -986,7 +986,22 @@ namespace Hammer::MultiDimensional {
             for (IndexType i2 = 0; i2 < 3; ++i2) {
                 for (IndexType i3 = 0; i3 < 3; ++i3) {
                     for (IndexType i4 = 0; i4 < 3; ++i4) {
-                        auto val0 = _products[27]->element({i3, i4, i1, i2});
+                        // Sum the contracted axes directly. The result keeps the
+                        // free axes of the first M followed by those of the second M;
+                        // the old graph optimizer returned those two blocks reversed.
+                        complex<double> val0 = 0.;
+                        for (IndexType x = 0; x < 2; ++x) {
+                            for (IndexType y = 0; y < 2; ++y) {
+                                for (IndexType z = 0; z < 2; ++z) {
+                                    for (IndexType w = 0; w < 2; ++w) {
+                                        val0 += _data[0]->element({x}) * conj(_data[11]->element({y, z})) *
+                                                conj(_data[0]->element({w})) *
+                                                _data[12]->element({x, i1, y, i2}) *
+                                                _data[12]->element({z, i3, w, i4});
+                                    }
+                                }
+                            }
+                        }
                         EXPECT_DOUBLE_EQ(getIC(res)->element({i1, i2, i3, i4}).real(), (val0).real());
                         EXPECT_DOUBLE_EQ(getIC(res)->element({i1, i2, i3, i4}).imag(), (val0).imag());
                     }

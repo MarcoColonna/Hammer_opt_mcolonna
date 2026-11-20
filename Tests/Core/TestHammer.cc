@@ -18,6 +18,15 @@ using namespace std;
 
 namespace Hammer {
 
+    TEST(HammerTest, HistogramApiCompatibility) {
+        Hammer ham;
+        const vector<uint16_t> bins{3, 4};
+        ham.addHistogram("compatibility", bins, false);
+        const vector<uint16_t> shape = ham.getHistogramShape("compatibility");
+        EXPECT_EQ(shape, bins);
+        EXPECT_FALSE(ham.histogramHasUnderOverFlows("compatibility"));
+    }
+
     TEST(HammerTest, Assignment) {
 
         Hammer ham;
@@ -28,7 +37,7 @@ namespace Hammer {
         ham.addFFScheme("Scheme1", {{"BD", "BGL"}, {"BD*", "BLPR"}});
         ham.addFFScheme("Scheme2", {{"BD", "BLPR"}, {"BD*", "ISGW2"}});
         ham.setFFInputScheme({{"BD", "ISGW2"}, {"BD*", "ISGW2"}});
-        IndexList bins = {10};
+        vector<uint16_t> bins = {10};
         ham.addHistogram("EPiP", bins, false);
         ham.initRun();
         ham.saveOptionCard("../../OptsA.yml", false);

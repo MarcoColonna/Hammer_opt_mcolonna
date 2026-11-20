@@ -138,6 +138,11 @@ else()
 	set(YamlCpp_FOUND_HOW "New")
 endif()
 
+# Older yaml-cpp packages export an unnamespaced target.
+if(NOT TARGET yaml-cpp::yaml-cpp AND TARGET yaml-cpp)
+	add_library(yaml-cpp::yaml-cpp ALIAS yaml-cpp)
+endif()
+
 # --- HepMC3 (required only for examples) ---
 set(HAVE_HEPMC3 FALSE)
 if(WITH_EXAMPLES)

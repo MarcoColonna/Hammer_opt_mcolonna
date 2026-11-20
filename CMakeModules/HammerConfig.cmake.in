@@ -4,7 +4,9 @@ set(HAMMER_VERSION @HAMMER_VERSION@)
 
 set_and_check(HAMMER_INCLUDE_DIR "@PACKAGE_INCLUDE_INSTALL_DIR@")
 set_and_check(HAMMER_LIB_DIR "@PACKAGE_LIB_INSTALL_DIR@")
-set_and_check(HAMMER_DATA_DIR "@PACKAGE_DATA_INSTALL_DIR@")
+# This release installs no runtime data files. Do not require an otherwise
+# unused data directory to exist when a C++ consumer loads the package.
+set(HAMMER_DATA_DIR "@PACKAGE_DATA_INSTALL_DIR@")
 
 include("${CMAKE_CURRENT_LIST_DIR}/HammerConfigDependencies.cmake")
 

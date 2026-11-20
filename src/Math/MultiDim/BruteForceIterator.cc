@@ -60,8 +60,15 @@ namespace Hammer::MultiDimensional {
 
     BruteForceIteratorRange::BruteForceIteratorRange(IndexList dimensions, IndexList fixed)
                 : _first{build_first(dimensions, fixed)},
-                  _last{fixed.empty() ? std::move(dimensions) : std::move(fixed)}
-    {}
+                  _last{std::move(dimensions)}
+    {
+        // Use exclusive upper bounds: a fixed coordinate still has one value.
+        for (size_t i = 0; i < fixed.size(); ++i) {
+            if (fixed[i] < _last[i]) {
+                _last[i] = static_cast<IndexType>(fixed[i] + 1);
+            }
+        }
+    }
 
     BruteForceIterator BruteForceIteratorRange::begin() const
         {

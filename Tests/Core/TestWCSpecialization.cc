@@ -88,7 +88,7 @@ namespace Hammer {
         ampl.setSettingsHandler(sh);
         ampl2.setSettingsHandler(sh);
 
-        vector<IndexType> dims{{11, 4, 2, 2, 2}};
+        IndexList dims{{11, 4, 2, 2, 2}};
         string name{"AmplBDLepNu"};
         ampl.addProcessSignature(PID::BPLUS, {-PID::D0, PID::NU_TAU, PID::ANTITAU});
         ampl.addTensor(

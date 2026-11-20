@@ -81,7 +81,7 @@ namespace Hammer::MultiDimensional {
 
         Base* AddAt::operator()(STensor& a, const OTensor& b) const {
             const BruteForceIteratorRange bf{b.dims()};
-            const SequentialIndexing ali{b.dims()};
+            const AlignedIndexing ali{b.dims()};
             for (const auto& el: bf) {
                 const PositionType newpos =
                     a.getIndexing().extendAlignedPosition(ali.indicesToPos(el), _position, _coord);

@@ -26,7 +26,6 @@
 #include "Hammer/Tools/Pdg.fhh"
 #include "Hammer/Tools/IOTypes.hh"
 
-#include "Hammer/Math/MultiDimensional.fhh"
 
 namespace Hammer {
 
@@ -79,7 +78,7 @@ namespace Hammer {
         /// @brief
         /// @param[in] name
         /// @param[in] bins
-        void setEventHistogramBin(const std::string& name, const IndexList& bins);
+        void setEventHistogramBin(const std::string& name, const std::vector<uint16_t>& bins);
 
         void fillEventHistogram(const std::string& name, const std::vector<double>& values);
 
@@ -212,7 +211,7 @@ namespace Hammer {
         /// @param[in] binSizes
         /// @param[in] hasUnderOverFlow
         /// @param[in] ranges
-        void addHistogram(const std::string& name, const IndexList& binSizes, bool hasUnderOverFlow = true,
+        void addHistogram(const std::string& name, const std::vector<uint16_t>& binSizes, bool hasUnderOverFlow = true,
                           const std::vector<std::pair<double, double>>& ranges = {});
 
         /// @brief Adds a tensor histogram
@@ -427,7 +426,7 @@ namespace Hammer {
         /// @param[in] processes
         /// @param[in] specialization
         /// @return
-        [[nodiscard]] double getWeight(const std::string& scheme, const std::vector<HashId>& processes = {},
+        [[nodiscard]] double getWeight(const std::string& scheme, const std::vector<size_t>& processes = {},
                                        const std::string& specialization = Spec::none()) const;
 
         /// @brief
@@ -536,7 +535,7 @@ namespace Hammer {
         [[nodiscard]] EventUIDGroup getHistogramEventIds(const std::string& name, const std::string& scheme,
                                                          const std::string& specialization = Spec::none()) const;
         [[nodiscard]] std::vector<std::vector<double>> getHistogramBinEdges(const std::string& name) const;
-        [[nodiscard]] IndexList getHistogramShape(const std::string& name) const;
+        [[nodiscard]] std::vector<uint16_t> getHistogramShape(const std::string& name) const;
         [[nodiscard]] bool histogramHasUnderOverFlows(const std::string& name) const;
 
 #ifdef HAVE_ROOT

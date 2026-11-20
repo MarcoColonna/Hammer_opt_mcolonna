@@ -79,7 +79,7 @@ namespace Hammer::MultiDimensional {
         // Edges with the same UID perform equivalent contractions (same index pattern)
         // even if they connect different vertices.
         void DotOuterOptimizer::Edge::updateUID() {
-            _contractionsUID = boost::hash<IndexPairList>()(_localPositions);
+            _contractionsUID = boost::hash_range(_localPositions.begin(), _localPositions.end());
         }
 
         DotOuterOptimizer::DotOuterOptimizer(const OuterContainer& first,

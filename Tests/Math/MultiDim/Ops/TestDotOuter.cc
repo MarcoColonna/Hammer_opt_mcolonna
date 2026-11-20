@@ -520,7 +520,7 @@ namespace Hammer::MultiDimensional {
 
     static void expectTensorEq(const IContainer& got, const IContainer& ref) {
         ASSERT_EQ(got.rank(), ref.rank());
-        BruteForceIterator bf{ref.dims()};
+        BruteForceIteratorRange bf{ref.dims()};
         for (auto idx : bf) {
             EXPECT_DOUBLE_EQ(got.element(idx).real(), ref.element(idx).real());
             EXPECT_DOUBLE_EQ(got.element(idx).imag(), ref.element(idx).imag());

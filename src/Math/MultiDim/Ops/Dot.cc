@@ -252,6 +252,20 @@ namespace Hammer::MultiDimensional {
         }
 
 
+        static Base::ElementType integerPower(Base::ElementType value, size_t exponent) {
+            Base::ElementType result = 1.;
+            while (exponent != 0) {
+                if (exponent & 1u) {
+                    result *= value;
+                }
+                exponent >>= 1u;
+                if (exponent != 0) {
+                    value *= value;
+                }
+            }
+            return result;
+        }
+
         Base* Dot::operator()(OTensor& a, const OTensor& b) {
                 // get the chunks
                 DotGroupList chunks = partitionContractions(a.getIndexing(), b.getIndexing());
@@ -325,8 +339,8 @@ namespace Hammer::MultiDimensional {
                                         }
                                         newscal += firstTerm;
                                     }
-                                    currentWeight *=
-                                        pow(newscal, multiplicities[i].first) * pow(conj(newscal), multiplicities[i].second);
+                                    currentWeight *= integerPower(newscal, multiplicities[i].first) *
+                                                     integerPower(conj(newscal), multiplicities[i].second);
                                 } else {
                                     auto newsparse = makeEmptySparse(newdimlabs.first, newdimlabs.second);
                                     STensor* result = static_cast<STensor*>(newsparse.get());
@@ -373,8 +387,8 @@ namespace Hammer::MultiDimensional {
                                             newscal += firstTerm * secondTerm;
                                         }
                                     }
-                                    currentWeight *= pow(newscal, multiplicities[i].first) *
-                                                     pow(conj(newscal), multiplicities[i].second);
+                                    currentWeight *= integerPower(newscal, multiplicities[i].first) *
+                                                     integerPower(conj(newscal), multiplicities[i].second);
                                 } else {
                                     auto newsparse = makeEmptySparse(newdimlabs.first, newdimlabs.second);
                                     STensor* result = static_cast<STensor*>(newsparse.get());
